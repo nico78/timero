@@ -359,7 +359,6 @@ public abstract class AbstractElementListSelectionDialog extends
         });
 
         fFilteredList = list;
-
         return list;
     }
 

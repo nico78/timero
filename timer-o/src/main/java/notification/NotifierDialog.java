@@ -6,6 +6,7 @@ import java.util.List;
 
 import notification.cache.ColorCache;
 import notification.cache.FontCache;
+import notification.NotificationType;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -68,11 +69,11 @@ public class NotifierDialog {
      * @param message
      * @param type
      */
-    public static void notify(Display display, String title, String message, NotificationType type) {
-        _shell = new Shell(display, SWT.NO_FOCUS | SWT.NO_TRIM | SWT.ON_TOP);
+    public static void notify(final Display display, String title, String message, NotificationType type) {
+        _shell = new Shell(display, SWT.NO_FOCUS | SWT.NO_TRIM);
         _shell.setLayout(new FillLayout());
         _shell.setForeground(_fgColor);
-        _shell.setBackgroundMode(SWT.INHERIT_NONE);
+        _shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
         _shell.addListener(SWT.Dispose, new Listener() {
             @Override
             public void handleEvent(Event event) {
@@ -97,7 +98,7 @@ public class NotifierDialog {
                     // get the size of the drawing area
                     Rectangle rect = _shell.getClientArea();
                     // create a new image with that size
-                    Image newImage = new Image(Display.getDefault(), Math.max(1, rect.width), rect.height);
+                    Image newImage = new Image(display, Math.max(1, rect.width), rect.height);
                     // create a GC object we can use to draw with
                     GC gc = new GC(newImage);
 
@@ -159,7 +160,6 @@ public class NotifierDialog {
         Font f = titleLabel.getFont();
         FontData fd = f.getFontData()[0];
         fd.setStyle(SWT.BOLD);
-       // fd.setName("calibri");
         fd.height = 11;
         titleLabel.setFont(FontCache.getFont(fd));
 
@@ -179,7 +179,7 @@ public class NotifierDialog {
 
         _shell.setSize(350, minHeight);
 
-        if (Display.getDefault().getActiveShell() == null || Display.getDefault().getActiveShell().getMonitor() == null) { return; }
+        if (display.getActiveShell() == null || display.getActiveShell().getMonitor() == null) { return; }
 
         Rectangle clientArea = Display.getDefault().getActiveShell().getMonitor().getClientArea();
 
@@ -206,10 +206,10 @@ public class NotifierDialog {
 
         _activeShells.add(_shell);
 
-        fadeIn(display,_shell);
+        fadeIn(_shell);
     }
 
-    private static void fadeIn(final Display display, final Shell _shell) {
+    private static void fadeIn(final Shell _shell) {
         Runnable run = new Runnable() {
 
             @Override
@@ -227,14 +227,14 @@ public class NotifierDialog {
                     }
 
                     _shell.setAlpha(cur);
-                    display.timerExec(FADE_TIMER, this);
+                    Display.getDefault().timerExec(FADE_TIMER, this);
                 } catch (Exception err) {
                     err.printStackTrace();
                 }
             }
 
         };
-        display.timerExec(FADE_TIMER, run);
+        Display.getDefault().timerExec(FADE_TIMER, run);
     }
 
     private static void startTimer(final Shell _shell) {

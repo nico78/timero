@@ -1,10 +1,11 @@
+package examples;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-public class AnimationBounce {
+public class AnimationDoubleBuffering {
   private static final int IMAGE_WIDTH = 100;
   private static final int TIMER_INTERVAL = 10;
 
@@ -50,10 +51,21 @@ public class AnimationBounce {
     canvas = new Canvas(shell, SWT.NO_BACKGROUND);
     canvas.addPaintListener(new PaintListener() {
       public void paintControl(PaintEvent event) {
-        // Draw the background
-        event.gc.fillRectangle(canvas.getBounds());
-        event.gc.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
-        event.gc.fillOval(x, y, IMAGE_WIDTH, IMAGE_WIDTH);
+        // Create the image to fill the canvas
+        Image image = new Image(shell.getDisplay(), canvas.getBounds());
+        // Set up the offscreen gc
+        GC gcImage = new GC(image);
+
+        gcImage.setBackground(event.gc.getBackground());
+        gcImage.fillRectangle(image.getBounds());
+        gcImage.setBackground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
+        gcImage.fillOval(x, y, IMAGE_WIDTH, IMAGE_WIDTH);
+
+        // Draw the offscreen buffer to the screen
+        event.gc.drawImage(image, 0, 0);
+
+        image.dispose();
+        gcImage.dispose();
       }
     });
 

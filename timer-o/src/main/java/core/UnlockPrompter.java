@@ -1,3 +1,4 @@
+package core;
 import lockedstatus.LockRecord;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -26,7 +27,6 @@ public class UnlockPrompter {
 				display.timerExec(1000,new Runnable(){
 					@Override
 					public void run() {
-						
 						Shell unlockDialog = new Shell(display, SWT.SYSTEM_MODAL | SWT.ON_TOP );
 						unlockDialog.setSize(200, 200);
 						unlockDialog.setLayout(new FillLayout());
@@ -41,7 +41,6 @@ public class UnlockPrompter {
 						comboViewer.setInput(proposals);
 						unlockDialog.open();
 						comboViewer.getCombo().setFocus();
-						System.out.println("open dialog");
 					}
 		    	});
 			}

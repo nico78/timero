@@ -1,7 +1,7 @@
 package event;
 
 
-final class SysoutEventPublisher implements
+public class SysoutEventPublisher implements
 		EventPublisher {
 	@Override
 	public void publishEvent(Event<?> event) {

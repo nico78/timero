@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
-public class Tester {
+public class NotificationMessageTester {
 	private static void doNotify(Display display) {
 		int max = NotificationType.values().length;
 		Random r = new Random();

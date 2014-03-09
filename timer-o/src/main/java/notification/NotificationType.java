@@ -1,25 +1,24 @@
 package notification;
 
-import notification.cache.ImageCache;
+import img.Icons;
 
 import org.eclipse.swt.graphics.Image;
 
-
 public enum NotificationType {
-    ERROR(ImageCache.getImage("error.png")),
-    DELETE(ImageCache.getImage("delete.png")),
-    WARN(ImageCache.getImage("warn.png")),
-    SUCCESS(ImageCache.getImage("ok.png")),
-    INFO(ImageCache.getImage("info.png")),
-    LIBRARY(ImageCache.getImage("library.png")),
-    HINT(ImageCache.getImage("hint.png")),
-    PRINTED(ImageCache.getImage("printer.png")),
-    CONNECTION_TERMINATED(ImageCache.getImage("terminated.png")),
-    CONNECTION_FAILED(ImageCache.getImage("connecting.png")),
-    CONNECTED(ImageCache.getImage("connected.png")),
-    DISCONNECTED(ImageCache.getImage("disconnected.png")),
-    TRANSACTION_OK(ImageCache.getImage("ok.png")),
-    TRANSACTION_FAIL(ImageCache.getImage("error.png"));
+    ERROR(Icons.getSWTImage("error.png")),
+    DELETE(Icons.getSWTImage("delete.png")),
+    WARN(Icons.getSWTImage("warn.png")),
+    SUCCESS(Icons.getSWTImage("ok.png")),
+    INFO(Icons.getSWTImage("info.png")),
+    LIBRARY(Icons.getSWTImage("library.png")),
+    HINT(Icons.getSWTImage("hint.png")),
+    PRINTED(Icons.getSWTImage("printer.png")),
+    TIMERO(Icons.getSWTImage("timero.png")),
+    CONNECTION_TERMINATED(Icons.getSWTImage("terminated.png")),
+    CONNECTED(Icons.getSWTImage("connected.png")),
+    DISCONNECTED(Icons.getSWTImage("disconnected.png")),
+    TRANSACTION_OK(Icons.getSWTImage("ok.png")),
+    TRANSACTION_FAIL(Icons.getSWTImage("error.png"));
 
     private Image _image;
 

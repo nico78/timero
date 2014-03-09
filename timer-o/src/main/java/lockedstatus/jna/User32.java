@@ -1,4 +1,4 @@
-package jna;
+package lockedstatus.jna;
 
 import com.sun.jna.Library;
 

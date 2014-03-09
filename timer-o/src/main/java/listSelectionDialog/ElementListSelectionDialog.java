@@ -13,35 +13,47 @@ package listSelectionDialog;
 import java.util.Arrays;
 import java.util.List;
 
+import listSelectionDialog.FilteredList.FilterMatcher;
+import localdb.Filterable;
+
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+
+import antlr.DefaultFileLineFormatter;
 
 /**
  * A class to select elements out of a list of elements.
  * 
  * @since 2.0
  */
-public class ElementListSelectionDialog extends
+public class ElementListSelectionDialog<T> extends
         AbstractElementListSelectionDialog {
 
-    private Object[] fElements;
+    private T[] fElements;
+	private ILabelProvider renderer;
+	private NewItemCreator<T> newItemCreator;
 
     /**
      * Creates a list selection dialog.
      * @param parent   the parent widget.
      * @param renderer the label renderer.
      */
-    public ElementListSelectionDialog(Shell parent, ILabelProvider renderer) {
+    public ElementListSelectionDialog(Shell parent, ILabelProvider renderer, NewItemCreator<T> newItemCreator) {
         super(parent, renderer);
+		this.renderer = renderer;
+		this.newItemCreator = newItemCreator;
+		setShellStyle(SWT.NO_TRIM | SWT.APPLICATION_MODAL | SWT.MAX | SWT.RESIZE);
+        
     }
 
     /**
      * Sets the elements of the list.
      * @param elements the elements of the list.
      */
-    public void setElements(Object[] elements) {
+    public void setElements(T[] elements) {
         fElements = elements;
     }
 
@@ -49,13 +61,17 @@ public class ElementListSelectionDialog extends
      * @see SelectionStatusDialog#computeResult()
      */
     protected void computeResult() {
-        List<Object> selection = Arrays.asList(getSelectedElements());
+        List<T> selection = (List<T>) Arrays.asList(getSelectedElements());
         if(selection.isEmpty())
-        	setResult(Arrays.asList(new Object[]{new String[]{enteredText()}}));
+        	setResult(Arrays.asList(new Object[]{createNewElementFor(enteredText())}));
         else
         	setResult(selection);
     }
 
+
+	private Object createNewElementFor(String text){
+		return newItemCreator.createItemFor(text);
+	}
     /*
      * @see Dialog#createDialogArea(Composite)
      */
@@ -65,11 +81,37 @@ public class ElementListSelectionDialog extends
         createMessageArea(contents);
         createFilterText(contents);
         createFilteredList(contents);
-
+        fFilteredList.setFilterMatcher(createFilterMatcher());
         setListElements(fElements);
 
         setSelection(getInitialElementSelections().toArray());
 
         return contents;
     }
+
+	private FilterMatcher createFilterMatcher() {
+		return new FilterMatcher(){
+			private StringMatcher fMatcher;
+
+			public void setFilter(String pattern, boolean ignoreCase,
+					boolean ignoreWildCards) {
+				fMatcher = new StringMatcher(pattern + '*', ignoreCase,
+						ignoreWildCards);
+			}
+
+			public boolean match(Object element) {
+				if(element instanceof Filterable)
+					return matchAny(((Filterable)element).matchStrings());
+				else
+					return fMatcher.match(renderer.getText(element));
+			}
+
+			private boolean matchAny(List<String> filterStrings) {
+				for(String filterString: filterStrings)
+					if(fMatcher.match(filterString))
+						return true;
+				return false;
+			}
+		};
+	}
 }

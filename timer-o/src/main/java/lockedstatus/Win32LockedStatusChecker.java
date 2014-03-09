@@ -1,6 +1,6 @@
 package lockedstatus;
 
-import jna.User32;
+import lockedstatus.jna.User32;
 
 import com.sun.jna.Native;
 

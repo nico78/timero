@@ -71,13 +71,12 @@ public class MessageLine extends CLabel {
             if (message != null && message.length() > 0) {
                 setText(message);
                 setImage(findImage(status));
-                setBackground(JFaceColors.getErrorBackground(getDisplay()));
                 return;
             }
         }
         setText(""); //$NON-NLS-1$	
-        setImage(null);
-        setBackground(fNormalMsgAreaBackground);
+       setImage(null);
+       setBackground(fNormalMsgAreaBackground);
     }
 
 }
