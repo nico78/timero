@@ -13,7 +13,7 @@ public class LockedStatusUpdater  {
 	protected final EventPublisher eventPublisher;
 	protected boolean wasLocked;
 	protected Date lockTime;
-
+    
 	
 
 	public LockedStatusUpdater(LockedStatusChecker status, Clock clock,

@@ -32,6 +32,7 @@ public class Application  {
 		this.lockedStatusMonitor = lockedStatusMonitor;
 		this.displayProvider = displayProvider;
 		this.dataManager = dataManager;
+		
 	}
 
 	public static void main(String[] args) throws InterruptedException {
@@ -40,20 +41,21 @@ public class Application  {
 	}
 
 	private  void start() {
-		timero = new Timero(displayProvider, dataManager);
+		timero = new Timero(displayProvider, dataManager, this);
 		timero.start();
 		dataManager.init();
 	//	initializeData();
 		hotKeyRegister.registerHotKey("alt J", new TimeroActionAssigned(timero){
 			@Override
 			public void doAction() {
-				timero.setFocus();
+				timero.promptJob();
 			}
 		});
 		trayRunner.setApp(this);
 		trayRunner.runInTray();
 		
 		lockedStatusMonitor.start();
+		
 		timero.setReady(true);
 	}
 
@@ -73,6 +75,8 @@ public class Application  {
 
 		dataManager.save(job1, job2, job3, dev, releaseNotes,actRecord);
 	}
+	
+	
 	
 	public void quit(){
 		timero.quit();
