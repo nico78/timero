@@ -4,9 +4,14 @@ import notification.NotificationType;
 import notification.cache.ColorCache;
 import notification.cache.FontCache;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -23,11 +28,17 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
 public class TimerShell {
+	
+	
+	
+	
+
 	public static final Color INIT_FG_COLOR = ColorCache.getColor(40,73,97);
-	public static final Color INIT_BORDER_COLOR =  ColorCache.getColor(226, 239, 249);
+	public static final Color INIT_BORDER_COLOR =  ColorCache.getColor(40, 73, 97);
 	public static final Color INIT_BG_BG_GRADIENT = ColorCache.getColor(171, 211, 248);
 	public static final Color INIT_BG_FG_GRADIENT = ColorCache.getColor(226, 239, 249);
 
@@ -43,9 +54,14 @@ public class TimerShell {
 	private Color bgBgGradient = INIT_BG_BG_GRADIENT;
 	private Color borderColor = INIT_BORDER_COLOR;
 	private Color fgColor = INIT_FG_COLOR;
+	private Timero timero;
+	private boolean mouseDown = false;
+	protected int xPos;
+	protected int yPos;
 
-	public TimerShell(Display display, String initialText){
-		shell = new Shell(display, SWT.NO_FOCUS | SWT.NO_TRIM | SWT.ON_TOP);
+	public TimerShell(Display display, String initialText, Timero timero){
+		this.timero = timero;
+		shell = new Shell(display, SWT.NO_FOCUS | SWT.NO_TRIM | SWT.ON_TOP|SWT.RESIZE);
 		this.display = display;
 		this.initialText = initialText;
 		decorate();
@@ -148,12 +164,12 @@ public class TimerShell {
 	        int startY = monitorArea.y + monitorArea.height - shell.getSize().y - 2;
 	        shell.setLocation(startX, startY);
 	      
-	        timerText.addMouseTrackListener(new MouseTrackListener() {
+	        inner.addMouseTrackListener(new MouseTrackListener() {
 				
 				@Override
 				public void mouseHover(MouseEvent e) {
-					fgColor = ColorCache.getBlack();
-					drawBgImage();
+//					fgColor = ColorCache.getBlack();
+//					drawBgImage();
 				}
 				
 				@Override
@@ -169,6 +185,79 @@ public class TimerShell {
 					drawBgImage();
 				}
 			});
+	        
+	    	MenuManager popManager = new MenuManager();
+			 IAction hideAction = new HideAction();
+			 IAction configureAction = new ConfigureAction();
+			 popManager.add(hideAction);
+			 popManager.add(configureAction);
+			 
+			 Menu menu = popManager.createContextMenu(inner);
+			 inner.setMenu(menu);
+			 
+			 //moving..
+			 inner.addMouseListener(new MouseListener() {
+
+		            @Override
+		            public void mouseUp(MouseEvent arg0) {
+		                // TODO Auto-generated method stub
+		                mouseDown=false;
+		            }
+
+		            @Override
+		            public void mouseDown(MouseEvent e) {
+		                // TODO Auto-generated method stub
+		                mouseDown=true;
+		                xPos=e.x;
+		                yPos=e.y; 
+		            }
+
+		            @Override
+		            public void mouseDoubleClick(MouseEvent arg0) {
+		            	timero.promptJob();
+		            	mouseDown=false;
+		            }
+		        });
+		        inner.addMouseMoveListener(new MouseMoveListener() {
+
+		            @Override
+		            public void mouseMove(MouseEvent e) {
+		                if(mouseDown){
+		                    shell.setLocation(shell.getLocation().x+(e.x-xPos),shell.getLocation().y+(e.y-yPos));
+		                }
+		            }
+		        });
+			 
+//	        inner.addMouseListener(new MouseListener() {
+//				
+//	        	
+//				@Override
+//				public void mouseUp(MouseEvent arg0) {
+//					switch(arg0.button){
+//					case 1:
+//						timero.promptJob();
+//						break;
+//					case 2:
+//					case 3:
+//					
+//						 break;
+//						
+//					}
+//					
+//				}
+//				
+//				@Override
+//				public void mouseDown(MouseEvent arg0) {
+//					
+//				}
+//				
+//				@Override
+//				public void mouseDoubleClick(MouseEvent arg0) {
+//					// TODO Auto-generated method stub
+//					
+//				}
+//			});
+			
 	        shell.setVisible(true);
 	}
 
@@ -228,7 +317,7 @@ public class TimerShell {
 	}
 
 	private void flash() {
-		fadeOut(3);
+		fadeOut(1);
 	}
 	
 	private  void fadeIn(final int numberOfTimes) {
@@ -301,6 +390,39 @@ public class TimerShell {
 	        display.timerExec(25, run);
    }
 
+	private final class HideAction extends Action {
+		
+		public HideAction() {
+			super("Hide");
+		}
+
+		@Override
+		public void run() {
+			System.out.println("hide called");
+			flash();
+		}
+	}
+
+public class ConfigureAction extends Action {
+		
+		public ConfigureAction() {
+			super("Configure...");
+		}
+
+		@Override
+		public void run() {
+			display.asyncExec(new Runnable(){
+
+				@Override
+				public void run() {
+					System.out.println("CONFIGURE");
+					//TODO popup configurer
+				}});
+		}
+	
+	}
+	
+	
 	public Shell getShell() {
 		return shell;
 	}
