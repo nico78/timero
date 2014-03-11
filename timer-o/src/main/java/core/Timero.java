@@ -30,14 +30,14 @@ public class Timero extends Thread{
 	private DataManager dataManager;
 	
 	private Job activeJob;
+	private Task activeTask;
+	
+	
 	private DisplayProvider displayProvider;
 	private boolean ready=false;
-		private Task activeTask;
 	private Application application;
 	private ActivityRecord activeActivity;
 	
-	
-
 	
 	public Timero(DisplayProvider displayProvider, DataManager dataManager, Application application){
 		this.displayProvider = displayProvider;
@@ -59,7 +59,9 @@ public class Timero extends Thread{
         timerShell = new TimerShell(display, "Starting...",this);
         taskSwitcher = new TaskSwitcher(timerShell.getShell(), dataManager);
              setActiveJob(NULL_ACTIVE_JOB);
-   updateTimerText();
+             updateTimerText();
+        setActiveJob(NULL_ACTIVE_JOB);
+        updateTimerText();
        timerShell.show();
 	}
 
@@ -126,6 +128,7 @@ public class Timero extends Thread{
 		activity.setStartTime(new Date());
 		setActiveActivity(activity);
 	}
+	
 
 	public ActivityRecord getActiveActivity() {
 		return activeActivity;

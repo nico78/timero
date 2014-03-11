@@ -53,7 +53,7 @@ public class TaskSwitcher {
 	public  Job showSelector() {
 		System.out.println(" show selector..");
 		ILabelProvider lp = new ArrayLabelProvider();
-		ElementListSelectionDialog<Job> dialog = new ElementListSelectionDialog(
+		ElementListSelectionDialog<Job> dialog = new ElementListSelectionDialog<Job>(
 				parent, lp,newJobCreator){
 			Image currentBackgroundImage;
 
@@ -118,16 +118,7 @@ public class TaskSwitcher {
 
 private void decorate(Shell shell){
 	
-    final Color _fgColor = ColorCache.getColor(45, 64, 93);
-   
-	final Color       _bgFgGradient = TimerShell.INIT_BG_FG_GRADIENT;
-	
-	final Color       _bgBgGradient =  TimerShell.INIT_BG_BG_GRADIENT;
-     // shell border color
-    final Color _borderColor  = TimerShell.INIT_BORDER_COLOR;
-    // title foreground color
-    final Color       _titleFgColor = TimerShell.INIT_FG_COLOR;
-    shell.setForeground(_fgColor);
+    shell.setForeground(ColorCache.getColor(45, 64, 93));
     shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
     
 
