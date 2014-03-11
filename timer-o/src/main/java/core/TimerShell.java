@@ -14,10 +14,6 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
-
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Drawable;
 import org.eclipse.swt.graphics.FontData;
@@ -70,6 +66,7 @@ public class TimerShell {
 	protected int yPos;
 	private Stylist stylist;
 
+	private int dummy=9;
 	public TimerShell(Display display, String initialText, Timero timero) {
 		this.timero = timero;
 		shell = new Shell(display, SWT.NO_FOCUS | SWT.NO_TRIM | SWT.ON_TOP
