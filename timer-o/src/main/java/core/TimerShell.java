@@ -199,14 +199,11 @@ public class TimerShell {
 
 				@Override
 				public void mouseUp(MouseEvent arg0) {
-					// TODO Auto-generated method stub
 					mouseDown = false;
 				}
 
 				@Override
 				public void mouseDown(MouseEvent e) {
-					// TODO Auto-generated method stub
-					System.out.println("Mouse down");
 					mouseDown = true;
 					xPos = e.x;
 					yPos = e.y;
@@ -223,7 +220,6 @@ public class TimerShell {
 				@Override
 				public void mouseMove(MouseEvent e) {
 					if (mouseDown) {
-						System.out.println("move");
 						locShell.setLocation(locShell.getLocation().x + (e.x - xPos),
 								locShell.getLocation().y + (e.y - yPos));
 					}
@@ -533,7 +529,6 @@ public class TimerShell {
 
 		@Override
 		public void run() {
-			System.out.println("hide called");
 			flash();
 		}
 	}

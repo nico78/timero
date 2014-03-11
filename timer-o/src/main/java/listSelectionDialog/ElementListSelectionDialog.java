@@ -72,12 +72,14 @@ public class ElementListSelectionDialog<T> extends
 	private Object createNewElementFor(String text){
 		return newItemCreator.createItemFor(text);
 	}
+	
+	
     /*
      * @see Dialog#createDialogArea(Composite)
      */
     protected Control createDialogArea(Composite parent) {
         Composite contents = (Composite) super.createDialogArea(parent);
-
+        
         createMessageArea(contents);
         createFilterText(contents);
         createFilteredList(contents);

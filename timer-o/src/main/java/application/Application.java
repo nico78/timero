@@ -53,7 +53,7 @@ public class Application  {
 		});
 		trayRunner.setApp(this);
 		trayRunner.runInTray();
-		
+		lockedStatusMonitor.getUnlockPrompter().setTimero(timero);
 		lockedStatusMonitor.start();
 		
 		timero.setReady(true);
@@ -69,11 +69,15 @@ public class Application  {
 		Task dev = new Task(job1, "Development");
 		Task releaseNotes = new Task(job1, "Release notes");
 		
-		ActivityRecord actRecord = new ActivityRecord(releaseNotes);
-		actRecord.setStartTime(new Date());
-		actRecord.setEndTime(new Date());
+		ActivityRecord actRecord = new ActivityRecord(releaseNotes, now(), now());
+		actRecord.setStartTime(now());
+		actRecord.setEndTime(now());
 
 		dataManager.save(job1, job2, job3, dev, releaseNotes,actRecord);
+	}
+
+	private Date now() {
+		return new Date();
 	}
 	
 	

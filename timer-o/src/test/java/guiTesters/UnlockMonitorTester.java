@@ -12,6 +12,7 @@ public class UnlockMonitorTester {
 	public static void main(String[] args) {
 		LockedStatusMonitor monitor = 
 				new LockedStatusMonitor(
+						null,//unlockprompter
 						new LockedStatusUpdater(
 								new Win32LockedStatusChecker(), 
 								new ActualClock(), 

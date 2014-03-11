@@ -23,6 +23,7 @@ import application.DisplayProvider;
 public class Timero extends Thread{
 
 	private static final Job NULL_ACTIVE_JOB = new Job("none","none","NUL");
+	private static final Task UNSPECIFIED_AWAY_TASK = new Task(new Job("away","away","IDL"),"away from desk(unspecified)");
 	private Display display;
 	private TimerShell timerShell;
 	private UnlockPrompter unlockPrompter;
@@ -37,6 +38,7 @@ public class Timero extends Thread{
 	private boolean ready=false;
 	private Application application;
 	private ActivityRecord activeActivity;
+	private Task prevTask;
 	
 	
 	public Timero(DisplayProvider displayProvider, DataManager dataManager, Application application){
@@ -55,7 +57,6 @@ public class Timero extends Thread{
 
 	public void run(){
 		display = displayProvider.getDisplay();
-        unlockPrompter = new UnlockPrompter(displayProvider);
         timerShell = new TimerShell(display, "Starting...",this);
         taskSwitcher = new TaskSwitcher(timerShell.getShell(), dataManager);
              setActiveJob(NULL_ACTIVE_JOB);
@@ -71,7 +72,7 @@ public class Timero extends Thread{
 			public void run() {
 				if(isReady()){
 					SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
-					Date now = new Date();
+					Date now = now();
 					String timeNow = df.format(now);
 					Job activeJob = getActiveJob();
 					String taskDesc;
@@ -115,20 +116,38 @@ public class Timero extends Thread{
 		return activeJob;
 	}
 
-	private synchronized void setActiveJob(Job activeJob) {
+	public synchronized void setActiveJob(Job activeJob) {
 		if(this.activeJob==activeJob)
 			return;
 		this.activeJob = activeJob;
 		if(activeJob==NULL_ACTIVE_JOB)
 			return;
-		
-		this.activeTask = new Task(activeJob, "default");
+		Task task = new Task(activeJob, "default");
+		setActiveTask(task);
+	}
+
+	public synchronized void setActiveTask(Task task) {
+		this.activeTask = task;
 		dataManager.save(activeTask);
-		ActivityRecord activity = new ActivityRecord(activeTask);
-		activity.setStartTime(new Date());
+		ActivityRecord activity = new ActivityRecord(activeTask, now());
 		setActiveActivity(activity);
 	}
 	
+	public void setAway(){
+		ActivityRecord currentActivity = getActiveActivity();
+		prevTask = currentActivity==null?null:currentActivity.getTask();
+		
+		dataManager.save(UNSPECIFIED_AWAY_TASK);
+		setActiveActivity(new ActivityRecord(UNSPECIFIED_AWAY_TASK, now()));
+	}
+	
+	public void setBackAgain(){
+		setActiveTask(prevTask);
+	}
+
+	private Date now() {
+		return new Date();
+	}
 
 	public ActivityRecord getActiveActivity() {
 		return activeActivity;
@@ -139,7 +158,7 @@ public class Timero extends Thread{
 	}
 	
 	private Job promptForNewJob() {
-		return taskSwitcher.showSelector();
+		return taskSwitcher.showSelector(null);
 	}
 	
 	public void whatHaveYouBeenDoing(LockRecord lockRecord){
@@ -149,4 +168,9 @@ public class Timero extends Thread{
 	public void quit() {
 		timerShell.quit();
 	}
+
+	public DataManager getDataManager() {
+		return dataManager;
+	}
+	
 }

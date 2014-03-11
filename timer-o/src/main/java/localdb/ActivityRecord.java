@@ -29,8 +29,16 @@ public class ActivityRecord {
 	public ActivityRecord(){
 		//for hibernate
 	}
-	public ActivityRecord(Task task){
+	
+	public ActivityRecord(Task task, Date startTime){
 		this.task = task;
+		this.startTime = startTime;
+	}
+
+	public ActivityRecord(Task task, Date startTime, Date endTime){
+		this.task = task;
+		this.startTime = startTime;
+		this.endTime = endTime;
 	}
 	
 	@ManyToOne

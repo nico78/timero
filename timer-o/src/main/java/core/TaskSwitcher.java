@@ -50,8 +50,7 @@ public class TaskSwitcher {
 		this.newJobCreator = new NewJobCreator(dataManager);
 	}
 
-	public  Job showSelector() {
-		System.out.println(" show selector..");
+	public  Job showSelector(final String bigPrompt) {
 		ILabelProvider lp = new ArrayLabelProvider();
 		ElementListSelectionDialog<Job> dialog = new ElementListSelectionDialog<Job>(
 				parent, lp,newJobCreator){
@@ -60,9 +59,15 @@ public class TaskSwitcher {
 					@Override
 					protected void configureShell(Shell shell) {
 						super.configureShell(shell);
+						if(bigPrompt!=null){
+							Point currentSize = shell.getSize();
+							int additionalHeight = 100;
+							shell.setSize(currentSize.x, currentSize.y + additionalHeight);
+							
+						}
 						decorate(shell);
 						try {
-							
+									
 						    		// get the size of the drawing area
 									Rectangle rect = shell.getClientArea();
 									
@@ -101,8 +106,7 @@ public class TaskSwitcher {
 
 		dialog.setTitle("Title");
 
-		dialog.setMessage("choose a job");
-		
+		dialog.setMessage(bigPrompt==null?"choose job":bigPrompt);
 		dialog.setEmptyListMessage("EMPTY LIST!");
 		dialog.setEmptySelectionMessage("New Item");
 		List<Job> allJobs = dataManager.getAllJobs();

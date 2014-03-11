@@ -1,17 +1,21 @@
 package lockedstatus;
 
+import core.UnlockPrompter;
+
 public class LockedStatusMonitor extends Thread {
 	
 	private final Sleeper sleeper;
 	private volatile boolean running = true;
 	
 	private LockedStatusUpdater statusUpdater;
-	public LockedStatusMonitor(LockedStatusUpdater statusUpdater, Sleeper sleeper) {
+	private UnlockPrompter unlockPrompter;
+	public LockedStatusMonitor(UnlockPrompter unlockPrompter, LockedStatusUpdater statusUpdater, Sleeper sleeper) {
+		this.unlockPrompter = unlockPrompter;
 		this.statusUpdater = statusUpdater;
 		this.sleeper = sleeper;
 	}
 
-	
+
 	public void run() {
 		while (isRunning()) {
 			sleeper.sleep();
@@ -26,6 +30,11 @@ public class LockedStatusMonitor extends Thread {
 
 	public void stopMonitor() {
 		this.running = false;
+	}
+
+
+	public UnlockPrompter getUnlockPrompter() {
+		return unlockPrompter;
 	}
 	
 	

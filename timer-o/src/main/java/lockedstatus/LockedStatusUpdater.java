@@ -29,9 +29,10 @@ public class LockedStatusUpdater  {
 		boolean nowLocked = status.isLocked();
 		if(wasLocked == nowLocked) 
 			return;
-		if(!wasLocked && nowLocked)
+		if(!wasLocked && nowLocked){
 			lockTime = clock.currentTime();
-		
+			eventPublisher.publishEvent(new Event<LockRecord>(new LockRecord(lockTime, null)));
+		}
 		if(!nowLocked && wasLocked){
 			Date unlockTime = clock.currentTime();
 			eventPublisher.publishEvent(new Event<LockRecord>(new LockRecord(lockTime, unlockTime)));

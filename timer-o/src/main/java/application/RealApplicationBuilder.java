@@ -22,6 +22,7 @@ public class RealApplicationBuilder implements ApplicationBuilder {
 		UnlockPrompter unlockPrompter = new UnlockPrompter(displayProvider);
 		LockedStatusMonitor monitor = 
 				new LockedStatusMonitor(
+						unlockPrompter,
 						new LockedStatusUpdater(
 								new Win32LockedStatusChecker(), 
 								new ActualClock(), //todo share with timer thread 
@@ -40,7 +41,11 @@ public class RealApplicationBuilder implements ApplicationBuilder {
 
 		@Override
 		public void publishEvent(Event<LockRecord> event) {
-			unlockPrompter.whatHaveYouBeenDoing(event.getObject());
+			LockRecord lockRecord = event.getObject();
+			if(lockRecord.getUnlockTime()==null)
+				unlockPrompter.handleLock(lockRecord);
+			else
+				unlockPrompter.handleUnlock(lockRecord);
 		}
 		
 	}
