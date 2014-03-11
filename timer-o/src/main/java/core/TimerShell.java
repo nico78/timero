@@ -66,6 +66,7 @@ public class TimerShell {
 	protected int yPos;
 	private Stylist stylist;
 
+	private int dummy1=1;
 	private int dummy=9;
 	public TimerShell(Display display, String initialText, Timero timero) {
 		this.timero = timero;
