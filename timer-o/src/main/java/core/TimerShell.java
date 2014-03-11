@@ -65,10 +65,7 @@ public class TimerShell {
 	protected int xPos;
 	protected int yPos;
 	private Stylist stylist;
-	private int dummy3=3;
-
-	private int dummy1=1;
-	private int dummy=9;
+	
 	public TimerShell(Display display, String initialText, Timero timero) {
 		this.timero = timero;
 		shell = new Shell(display, SWT.NO_FOCUS | SWT.NO_TRIM | SWT.ON_TOP
