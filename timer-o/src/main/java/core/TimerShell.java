@@ -50,8 +50,8 @@ public class TimerShell {
 
 	private static final Color HOVER_BG_COLOR = ColorCache.getColor(0, 211, 243);
 	
-	private static final FontData TITLE_FONT = new FontData("calibri", SWT.BOLD, 11);
-	private static final FontData SUBTEXT_FONT = new FontData("calibri", SWT.BOLD, 8);
+	private static final FontData TITLE_FONT = new FontData("calibri",  11, SWT.BOLD);
+	private static final FontData SUBTEXT_FONT = new FontData("calibri", 8, SWT.BOLD);
 	
 	private Display display;
 	private CLabel timerText;
@@ -123,10 +123,6 @@ public class TimerShell {
 	
 	private class Stylist {
 
-	
-
-
-		
 
 		private void style(final Shell locShell) {
 			int width = 350;
@@ -156,12 +152,12 @@ public class TimerShell {
 			String initialTitle = "TIMERO";
 			
 			timerText = new CLabel(inner, SWT.NONE);
-			applyControlStyling(timerText, TITLE_FONT, Layouts.GD_FILL_CENTERED);
 			timerText.setText(initialTitle);
+			applyControlStyling(timerText, TITLE_FONT, Layouts.GD_FILL_CENTERED);
 
 			subText = new Label(inner, SWT.WRAP);
-			applyControlStyling(subText, SUBTEXT_FONT, Layouts.getFillHorizontal2Span());
 			subText.setText(initialText);
+			applyControlStyling(subText, SUBTEXT_FONT, Layouts.getFillHorizontal2Span());
 
 			locShell.setSize(width, Math.max(initHeight,requiredHeightForString(initialText, heightOfFont(subText))));
 
