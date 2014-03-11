@@ -59,6 +59,7 @@ public class TaskSwitcher {
 					@Override
 					protected void configureShell(Shell shell) {
 						super.configureShell(shell);
+						
 						if(bigPrompt!=null){
 							Point currentSize = shell.getSize();
 							int additionalHeight = 100;
@@ -100,7 +101,9 @@ public class TaskSwitcher {
 						    	} catch (Exception err) {
 						    		err.printStackTrace();
 						    	}
+						shell.setActive();
 					}
+					
 			
 		};
 

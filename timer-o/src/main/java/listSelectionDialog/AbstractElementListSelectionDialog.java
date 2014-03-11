@@ -30,6 +30,7 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -429,10 +430,31 @@ public abstract class AbstractElementListSelectionDialog extends
      * @see org.eclipse.jface.window.Window#open()
      */
     public int open() {
+    	setBlockOnOpen(false);
         super.open();
+        Shell shell = getShell();
+		shell.setFocus();
+		shell.forceActive();
+		shell.forceFocus();
+        fFilterText.forceFocus();
+        runEventLoop(shell);
         return getReturnCode();
     }
 
+    private void runEventLoop(Shell loopShell) {
+
+		//Use the display provided by the shell if possible
+		Display display;
+		display = loopShell.getDisplay();
+
+		while (loopShell != null && !loopShell.isDisposed()) {
+				if (!display.readAndDispatch()) {
+					display.sleep();
+				}
+		}
+		if (!display.isDisposed()) display.update();
+	}
+    
     private void access$superCreate() {
         super.create();
     }
