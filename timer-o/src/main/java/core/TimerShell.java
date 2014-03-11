@@ -65,6 +65,7 @@ public class TimerShell {
 	protected int xPos;
 	protected int yPos;
 	private Stylist stylist;
+	private int dummy3=3;
 
 	private int dummy1=1;
 	private int dummy=9;
