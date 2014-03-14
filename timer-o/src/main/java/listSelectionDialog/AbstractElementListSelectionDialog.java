@@ -433,19 +433,22 @@ public abstract class AbstractElementListSelectionDialog extends
     	setBlockOnOpen(false);
         super.open();
         Shell shell = getShell();
-		shell.setFocus();
-		shell.forceActive();
-		shell.forceFocus();
-        fFilterText.forceFocus();
+		focus(shell);
         runEventLoop(shell);
         return getReturnCode();
     }
 
+	private void focus(Shell shell) {
+		shell.setFocus();
+		shell.forceActive();
+		shell.forceFocus();
+        fFilterText.forceFocus();
+	}
+
     private void runEventLoop(Shell loopShell) {
 
 		//Use the display provided by the shell if possible
-		Display display;
-		display = loopShell.getDisplay();
+		Display display = loopShell.getDisplay();
 
 		while (loopShell != null && !loopShell.isDisposed()) {
 				if (!display.readAndDispatch()) {

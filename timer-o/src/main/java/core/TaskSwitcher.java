@@ -1,42 +1,22 @@
 package core;
-import java.util.ArrayList;
 import java.util.List;
 
 import listSelectionDialog.ElementListSelectionDialog;
 import listSelectionDialog.NewItemCreator;
 import localdb.DataManager;
 import localdb.Job;
-
-import notification.NotificationType;
 import notification.cache.ColorCache;
-import notification.cache.FontCache;
 
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.preference.JFacePreferences;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseTrackListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 public class TaskSwitcher {
@@ -64,7 +44,7 @@ public class TaskSwitcher {
 							Point currentSize = shell.getSize();
 							int additionalHeight = 100;
 							shell.setSize(currentSize.x, currentSize.y + additionalHeight);
-							
+							//TODO use standardised Stylist/look&feel
 						}
 						decorate(shell);
 						try {
