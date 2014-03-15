@@ -270,7 +270,13 @@ public abstract class AbstractElementListSelectionDialog extends
         label.setLayoutData(data);
 
         fMessage = label;
+<<<<<<< HEAD
       //  label.setFont(FontCache.getFont(new FontData("consolas",8,SWT.BOLD)));
+||||||| merged common ancestors
+
+=======
+        label.setFont(FontCache.getFont(new FontData("consolas",8,SWT.BOLD)));
+>>>>>>> 017f57a41824fd58f5766ceacf64ced9f138fdd7
         return label;
     }
 
@@ -346,12 +352,22 @@ public abstract class AbstractElementListSelectionDialog extends
         data.verticalAlignment = GridData.FILL;
         list.setLayoutData(data);
         list.setFont(parent.getFont());
+<<<<<<< HEAD
 
 //        FontData fd = list.getFont().getFontData()[0];
 //        fd.setStyle(SWT.BOLD);
 //        fd.setName("consolas");
 //        fd.height = 11;
 //        list.setFont(FontCache.getFont(fd));
+||||||| merged common ancestors
+=======
+
+        FontData fd = list.getFont().getFontData()[0];
+        fd.setStyle(SWT.BOLD);
+        fd.setName("consolas");
+        fd.height = 11;
+        list.setFont(FontCache.getFont(fd));
+>>>>>>> 017f57a41824fd58f5766ceacf64ced9f138fdd7
         list.setFilter((fFilter == null ? "" : fFilter)); //$NON-NLS-1$		
 
         list.addSelectionListener(new SelectionListener() {

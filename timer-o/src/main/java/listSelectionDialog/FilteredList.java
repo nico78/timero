@@ -240,6 +240,7 @@ public class FilteredList extends Composite {
 		fList = new Table(this, style);
 		fList.setLayoutData(new GridData(GridData.FILL_BOTH));
 		fList.setFont(parent.getFont());
+<<<<<<< HEAD
 	//	fList.setLinesVisible(true);
 //		FontData fd = fList.getFont().getFontData()[0];
 //		fd.setStyle(SWT.BOLD);
@@ -247,6 +248,15 @@ public class FilteredList extends Composite {
 //		fd.height = 11;
 //		fList.setFont(FontCache.getFont(fd));
 
+||||||| merged common ancestors
+=======
+		FontData fd = fList.getFont().getFontData()[0];
+		fd.setStyle(SWT.BOLD);
+		fd.setName("calibri");
+		fd.height = 11;
+		fList.setFont(FontCache.getFont(fd));
+
+>>>>>>> 017f57a41824fd58f5766ceacf64ced9f138fdd7
 		fList.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				fLabelProvider.dispose();
