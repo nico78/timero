@@ -563,17 +563,13 @@ public class TimerShell {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
-		System.out.println("dispose...");
 		display.dispose();
-		System.out.println("exit from timer");
 		System.exit(0);
 	}
 
 	public void focus() {
-		System.out.println("timer focus..");
 		display.syncExec(new Runnable() {
 			public void run() {
-				System.out.println("timer setfocus run");
 				shell.setActive();
 			}
 		});
@@ -587,7 +583,4 @@ public class TimerShell {
 			}
 		});
 	}
-
-
-	
 }
