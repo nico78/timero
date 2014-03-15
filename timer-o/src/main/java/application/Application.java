@@ -48,7 +48,13 @@ public class Application  {
 		hotKeyRegister.registerHotKey("alt J", new TimeroActionAssigned(timero){
 			@Override
 			public void doAction() {
-				timero.promptJob();
+				timero.promptNewJob();
+			}
+		});
+		hotKeyRegister.registerHotKey("alt T", new TimeroActionAssigned(timero){
+			@Override
+			public void doAction() {
+				timero.promptNewTaskActiveJob();
 			}
 		});
 		trayRunner.setApp(this);

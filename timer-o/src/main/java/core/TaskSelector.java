@@ -5,6 +5,7 @@ import listSelectionDialog.ElementListSelectionDialog;
 import listSelectionDialog.NewItemCreator;
 import localdb.DataManager;
 import localdb.Job;
+import localdb.Task;
 import notification.cache.ColorCache;
 
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -19,20 +20,22 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
-public class TaskSwitcher {
+public class TaskSelector {
 	private Shell parent;
 	private DataManager dataManager;
-	private NewItemCreator<Job> newJobCreator;
+	private NewItemCreator<Task> newJobCreator;
+	private Job job;
 
-	public TaskSwitcher(Shell parent, DataManager dataManager) {
+	public TaskSelector(Shell parent, Job job, DataManager dataManager) {
 		this.parent = parent;
 		this.dataManager = dataManager;
-		this.newJobCreator = new NewJobCreator(dataManager);
+		this.job = job;
+		this.newJobCreator = new NewTaskCreator(job, dataManager);
 	}
 
-	public  Job showSelector(final String bigPrompt) {
+	public  Task showSelector(final String bigPrompt) {
 		ILabelProvider lp = new ArrayLabelProvider();
-		ElementListSelectionDialog<Job> dialog = new ElementListSelectionDialog<Job>(
+		ElementListSelectionDialog<Task> dialog = new ElementListSelectionDialog<Task>(
 				parent, lp,newJobCreator){
 			Image currentBackgroundImage;
 
@@ -59,12 +62,12 @@ public class TaskSwitcher {
 									
 									// fill background
 									gc.setForeground(TimerShell.INIT_BG_FG_GRADIENT);
-									gc.setBackground(TimerShell.INIT_BG_BG_GRADIENT);
+									gc.setBackground(TimerShell.INIT_FG_COLOR);
 									gc.fillGradientRectangle(rect.x, rect.y, rect.width, rect.height, true);
 									
 									// draw shell edge
 									gc.setLineWidth(2);
-									gc.setForeground(TimerShell.INIT_FG_COLOR);
+									gc.setForeground(TimerShell.INIT_BG_BG_GRADIENT);
 									gc.drawRectangle(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2);
 									// remember to dipose the GC object!
 									gc.dispose();
@@ -89,15 +92,15 @@ public class TaskSwitcher {
 
 		dialog.setTitle("Title");
 
-		dialog.setMessage(bigPrompt==null?"choose job":bigPrompt);
+		dialog.setMessage(bigPrompt==null?"choose task for "+job.toString():bigPrompt);
 		dialog.setEmptyListMessage("EMPTY LIST!");
 		dialog.setEmptySelectionMessage("New Item");
-		List<Job> allJobs = dataManager.getAllJobs();
-		dialog.setElements(allJobs.toArray(new Job[0]));
+		List<Task> tasksForJob = dataManager.getSuggestedTasksForJob(job);
+		dialog.setElements(tasksForJob.toArray(new Task[0]));
 		
 		dialog.setMultipleSelection(false);
 		if(dialog.open() == Window.OK)
-			return (Job)dialog.getResult()[0];
+			return (Task)dialog.getResult()[0];
 		else
 			return null;
 
@@ -125,8 +128,8 @@ private void decorate(Shell shell){
 	static class ArrayLabelProvider extends LabelProvider {
 
 		public String getText(Object element) {
-			Job job = (Job) element;
-			return job.getReference() + "--" + job.getDescription().toString();
+			Task task = (Task) element;
+			return task.getTaskDescription();
 		}
 	}
 }

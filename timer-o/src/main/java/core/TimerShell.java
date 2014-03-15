@@ -211,7 +211,7 @@ public class TimerShell {
 
 				@Override
 				public void mouseDoubleClick(MouseEvent arg0) {
-					timero.promptJob();
+					timero.promptNewJob();
 					mouseDown = false;
 				}
 			});

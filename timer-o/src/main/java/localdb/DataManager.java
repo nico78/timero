@@ -18,4 +18,6 @@ public interface DataManager {
 
 	public abstract List<Job> getAllJobs();
 
+	public abstract List<Task> getSuggestedTasksForJob(Job job);
+
 }

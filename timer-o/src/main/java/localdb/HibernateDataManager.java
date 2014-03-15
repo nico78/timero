@@ -1,11 +1,17 @@
 package localdb;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+
+import core.Timero;
 
 public class HibernateDataManager implements DataManager {
 
@@ -112,6 +118,43 @@ public class HibernateDataManager implements DataManager {
 		List<Job> list = (List<Job>) query.list();
 		session.close();
 		return list;
+	}
+
+	
+	private  List<Task> getStandardTasks(Job job){
+		List<Task> standardTasks= new ArrayList<Task>();
+		for(String name :Arrays.asList("Release notes","Coding", "Debugging","Analysis","Unit tests","Dev tests","Support QA", "Scheduling", "Builds", "Data setup")){
+			standardTasks.add(new Task(job, name));
+		}
+		return standardTasks;
+	}
+
+	@Override
+	public List<Task> getSuggestedTasksForJob(Job job) {
+		List<Task> recordedTasks = getRecordedTasksFor(job);
+		List<Task> standardTasks = getStandardTasks(job);
+		
+		List<Task> suggestedTasks = new ArrayList<Task>();
+		Set<String> recNames = new HashSet<String>();
+		for(Task recTask:recordedTasks){
+			recNames.add(recTask.getTaskDescription());
+			suggestedTasks.add(recTask);
+		}
+		for(Task standardTask: standardTasks){
+			if(!recNames.contains(standardTask.getTaskDescription()))
+					suggestedTasks.add(standardTask);
+		}
+		return suggestedTasks;
+	}
+
+
+	public List<Task> getRecordedTasksFor(Job job) {
+		Session session = openSession();
+		Query query = session.createQuery("from Task where job = :job");
+		query.setParameter("job", job);
+		List<Task> recordedTasks = (List<Task>)query.list();
+		session.close();
+		return recordedTasks;
 	}
 
 	

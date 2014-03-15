@@ -24,9 +24,8 @@ public class Task {
 	private Long id;
 
 	
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="job_id")
-	@Fetch(FetchMode.SELECT)
 	private Job job;
 	
 	public Task(){

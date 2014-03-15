@@ -12,7 +12,6 @@
  *******************************************************************************/
 package listSelectionDialog;
 
-import notification.cache.ColorCache;
 import notification.cache.FontCache;
 
 import org.eclipse.core.runtime.Assert;
@@ -271,7 +270,7 @@ public abstract class AbstractElementListSelectionDialog extends
         label.setLayoutData(data);
 
         fMessage = label;
-
+      //  label.setFont(FontCache.getFont(new FontData("consolas",8,SWT.BOLD)));
         return label;
     }
 
@@ -347,6 +346,12 @@ public abstract class AbstractElementListSelectionDialog extends
         data.verticalAlignment = GridData.FILL;
         list.setLayoutData(data);
         list.setFont(parent.getFont());
+
+//        FontData fd = list.getFont().getFontData()[0];
+//        fd.setStyle(SWT.BOLD);
+//        fd.setName("consolas");
+//        fd.height = 11;
+//        list.setFont(FontCache.getFont(fd));
         list.setFilter((fFilter == null ? "" : fFilter)); //$NON-NLS-1$		
 
         list.addSelectionListener(new SelectionListener() {
@@ -390,13 +395,12 @@ public abstract class AbstractElementListSelectionDialog extends
         data.verticalAlignment = GridData.BEGINNING;
         text.setLayoutData(data);
         text.setFont(parent.getFont());
-       // text.setBackground(ColorCache.getColor(34,65, 120));
         
-//        FontData fd = text.getFont().getFontData()[0];
-//        fd.setStyle(SWT.BOLD);
-//        fd.setName("consolas");
-//        fd.height = 11;
-//        text.setFont(FontCache.getFont(fd));
+        FontData fd = text.getFont().getFontData()[0];
+        fd.setStyle(SWT.BOLD);
+        fd.setName("consolas");
+        fd.height = 11;
+        text.setFont(FontCache.getFont(fd));
         text.setText((fFilter == null ? "" : fFilter)); //$NON-NLS-1$
 
         Listener listener = new Listener() {

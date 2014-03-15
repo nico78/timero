@@ -97,7 +97,7 @@ public class ElementListSelectionDialog<T> extends
 
 			public void setFilter(String pattern, boolean ignoreCase,
 					boolean ignoreWildCards) {
-				fMatcher = new StringMatcher(pattern + '*', ignoreCase,
+				fMatcher = new StringMatcher('*' +pattern + '*', ignoreCase,
 						ignoreWildCards);
 			}
 

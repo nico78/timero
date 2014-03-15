@@ -1,37 +1,15 @@
 package core;
 
-import listSelectionDialog.ElementListSelectionDialog;
 import localdb.ActivityRecord;
-import localdb.DataManager;
 import localdb.Job;
 import localdb.Task;
 import lockedstatus.LockRecord;
 
-import notification.NotificationType;
-import notification.cache.ColorCache;
-import notification.cache.FontCache;
-
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 import application.DisplayProvider;
 
@@ -153,13 +131,13 @@ public class UnlockPrompter {
 //		 shell.setLocation(startX, startY);
 //		shell.open();
 		
-		TaskSwitcher taskSwitcher = new TaskSwitcher(display.getActiveShell(), timero.getDataManager());
+		JobSelector taskSwitcher = new JobSelector(display.getActiveShell(), timero.getDataManager());
 		
 		String prompt = "Your computer was locked from \n"
 		+ lockRecord.getLockTime() + " to \n"
 		+ lockRecord.getUnlockTime() + "\n" + "What were you doing?";
 		
-		Job job = taskSwitcher.showSelector(prompt);
+		Job job = taskSwitcher.promptNewJob(prompt);
 		
 		
 		//todo move to timero
