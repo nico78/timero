@@ -1,4 +1,5 @@
 package listSelectionDialog;
+
 /*******************************************************************************
  * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
@@ -16,6 +17,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
+import notification.cache.FontCache;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -27,6 +30,7 @@ import org.eclipse.swt.accessibility.Accessible;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -66,8 +70,8 @@ public class FilteredList extends Composite {
 		 * @param element
 		 *            The element to test against.
 		 * @return <code>true</code> if the object matches the pattern,
-		 *         <code>false</code> otherwise. <code>setFilter()</code>
-		 *         must have been called at least once prior to a call to this
+		 *         <code>false</code> otherwise. <code>setFilter()</code> must
+		 *         have been called at least once prior to a call to this
 		 *         method.
 		 */
 		boolean match(Object element);
@@ -237,6 +241,12 @@ public class FilteredList extends Composite {
 		fList = new Table(this, style);
 		fList.setLayoutData(new GridData(GridData.FILL_BOTH));
 		fList.setFont(parent.getFont());
+		FontData fd = fList.getFont().getFontData()[0];
+		fd.setStyle(SWT.BOLD);
+		fd.setName("calibri");
+		fd.height = 11;
+		fList.setFont(FontCache.getFont(fd));
+
 		fList.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				fLabelProvider.dispose();
@@ -457,7 +467,7 @@ public class FilteredList extends Composite {
 		}
 		fUpdateJob = new TableUpdateJob(fList, fFoldedCount);
 		fUpdateJob.schedule();
-		//fUpdateJob.schedule();
+		// fUpdateJob.schedule();
 	}
 
 	/**
@@ -547,7 +557,7 @@ public class FilteredList extends Composite {
 		 * Programmatic selections requested while this job was running.
 		 */
 		int[] indicesToSelect;
-		
+
 		private boolean readyForSelection = false;
 
 		/**
@@ -564,79 +574,87 @@ public class FilteredList extends Composite {
 
 		public void cancel() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
-		public void schedule(int num){
+		public void schedule(int num) {
 			runInUIThread();
 		}
-		public void schedule(){
+
+		public void schedule() {
 			runInUIThread();
 		}
+
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see org.eclipse.ui.progress.UIJob#runInUIThread(org.eclipse.core.runtime.IProgressMonitor)
+		 * @see
+		 * org.eclipse.ui.progress.UIJob#runInUIThread(org.eclipse.core.runtime
+		 * .IProgressMonitor)
 		 */
-public IStatus runInUIThread() {
-            if (fTable.isDisposed()) {
+		public IStatus runInUIThread() {
+			if (fTable.isDisposed()) {
 				return Status.CANCEL_STATUS;
 			}
-            int itemCount = fTable.getItemCount();
-                        
-            // Remove excess items
-            if (fCount < itemCount) {
-                fTable.setRedraw(false);
-                fTable.remove(fCount, itemCount - 1);
-                fTable.setRedraw(true);
-                itemCount = fTable.getItemCount();
-            }
-            // table empty -> no selection
-            if (fCount == 0) {
-                fTable.notifyListeners(SWT.Selection, new Event());
-                return Status.OK_STATUS;
-            }
-            // How many we are going to do this time.
-            int iterations = Math.min(10, fCount - currentIndex);
-            for (int i = 0; i < iterations; i++) {
-               
-                final TableItem item = (currentIndex < itemCount) ? fTable
-                        .getItem(currentIndex)
-                        : new TableItem(fTable, SWT.NONE);
-                final Label label = fLabels[fFilteredIndices[fFoldedIndices[currentIndex]]];
-                item.setText(label.string);
-                item.setImage(label.image);
-                currentIndex++;
-            }
-           
-            if (currentIndex < fCount) {
-            	fUpdateJob.schedule(100);
+			int itemCount = fTable.getItemCount();
+
+			// Remove excess items
+			if (fCount < itemCount) {
+				fTable.setRedraw(false);
+				fTable.remove(fCount, itemCount - 1);
+				fTable.setRedraw(true);
+				itemCount = fTable.getItemCount();
+			}
+			// table empty -> no selection
+			if (fCount == 0) {
+				fTable.notifyListeners(SWT.Selection, new Event());
+				return Status.OK_STATUS;
+			}
+			// How many we are going to do this time.
+			int iterations = Math.min(10, fCount - currentIndex);
+			for (int i = 0; i < iterations; i++) {
+
+				final TableItem item = (currentIndex < itemCount) ? fTable
+						.getItem(currentIndex)
+						: new TableItem(fTable, SWT.NONE);
+				final Label label = fLabels[fFilteredIndices[fFoldedIndices[currentIndex]]];
+				item.setText(label.string);
+				item.setImage(label.image);
+				currentIndex++;
+			}
+
+			if (currentIndex < fCount) {
+				fUpdateJob.schedule(100);
 			} else {
-                if (indicesToSelect == null) {
-                 	// Make a default selection in the table if there is none.
-                	// If a selection has already been made, honor it.
-                	// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=112146
-                    if (fCount > 0) {
-                    	if (fTable.getSelectionIndices().length == 0) {
-                    		defaultSelect();
-                    	} else {
-                    		// There is a selection, but it likely hasn't changed since the
-                    		// job started.  Force a selection notification, since the
-                    		// items represented by the selection have changed.
-							// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=119456
-                    		fTable.notifyListeners(SWT.Selection, new Event());
-                    	}
-                    }
-                } else {
-                	// Set the selection as indicated.
-                    selectAndNotify(indicesToSelect);
-                }
-                // This flag signifies that the selection can now be directly
-                // updated in the widget.
-                readyForSelection = true;
-            }
-            return Status.OK_STATUS;
-        }
+				if (indicesToSelect == null) {
+					// Make a default selection in the table if there is none.
+					// If a selection has already been made, honor it.
+					// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=112146
+					if (fCount > 0) {
+						if (fTable.getSelectionIndices().length == 0) {
+							defaultSelect();
+						} else {
+							// There is a selection, but it likely hasn't
+							// changed since the
+							// job started. Force a selection notification,
+							// since the
+							// items represented by the selection have changed.
+							// See
+							// https://bugs.eclipse.org/bugs/show_bug.cgi?id=119456
+							fTable.notifyListeners(SWT.Selection, new Event());
+						}
+					}
+				} else {
+					// Set the selection as indicated.
+					selectAndNotify(indicesToSelect);
+				}
+				// This flag signifies that the selection can now be directly
+				// updated in the widget.
+				readyForSelection = true;
+			}
+			return Status.OK_STATUS;
+		}
+
 		/**
 		 * Update the selection for the supplied indices.
 		 * 
@@ -757,18 +775,20 @@ public IStatus runInUIThread() {
 	public void setLabelProvider(ILabelProvider labelProvider) {
 		this.fLabelProvider = labelProvider;
 	}
-	
+
 	/**
-	 * Returns the accessible object for the receiver.
-	 * If this is the first time this object is requested,
-	 * then the object is created and returned.
-	 *
+	 * Returns the accessible object for the receiver. If this is the first time
+	 * this object is requested, then the object is created and returned.
+	 * 
 	 * @return the accessible object
-	 *
-	 * @exception SWTException <ul>
-	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-	 * </ul>
+	 * 
+	 * @exception SWTException
+	 *                <ul>
+	 *                <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+	 *                disposed</li>
+	 *                <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
+	 *                thread that created the receiver</li>
+	 *                </ul>
 	 * 
 	 * @see Accessible#addAccessibleListener
 	 * @see Accessible#addAccessibleControlListener
