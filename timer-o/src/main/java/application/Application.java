@@ -90,6 +90,7 @@ public class Application  {
 	
 	public void quit(){
 		timero.quit();
+		dataManager.close();
 	}
 
 }

@@ -135,7 +135,13 @@
 			<version>3.0.0</version>
 			<scope>test</scope>
 		</dependency>
-
+		<!--  iseries driver only -->
+	<dependency>
+		<groupId>net.sf.jt400</groupId>
+		<artifactId>jt400</artifactId>
+		<version>6.7</version>
+	</dependency>
+            
 
 	</dependencies>
 </project>

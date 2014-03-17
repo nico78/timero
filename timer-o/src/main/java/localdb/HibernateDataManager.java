@@ -157,6 +157,13 @@ public class HibernateDataManager implements DataManager {
 		return recordedTasks;
 	}
 
+
+	@Override
+	public void close() {
+		sessionFactory.close();
+		System.out.println("session factory closed: " + sessionFactory.isClosed());
+	}
+
 	
 	
 }

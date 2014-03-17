@@ -20,4 +20,6 @@ public interface DataManager {
 
 	public abstract List<Task> getSuggestedTasksForJob(Job job);
 
+	public abstract void close();
+
 }

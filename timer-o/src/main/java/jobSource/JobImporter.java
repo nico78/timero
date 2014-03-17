@@ -40,14 +40,17 @@ public class JobImporter {
 			while (resultSet.next()) {
 				String reference = resultSet.getString("codex");
 				String description = resultSet.getString("Description");
-				if (dataManager.getJobByReference(reference) == null) {
-					Job job = new Job();
+				Job job = dataManager.getJobByReference(reference);
+				if (job == null) {
+				job = new Job();
 					job.setReference(reference);
-					job.setSource("JOB");
-					job.setDescription(description);
-					dataManager.save(job);
 				}
+				job.setSource("JOB");
+				job.setDescription(description);
+				dataManager.save(job);
 			}
+			
+			dataManager.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

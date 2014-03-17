@@ -88,7 +88,8 @@ public class Timero extends Thread{
 					timerShell.setSubText(taskDesc + " \n" + timeDisplay);
 					
 				}
-				display.timerExec(500, this);
+				if(!display.isDisposed())
+					display.timerExec(500, this);
 			}
         });
 	}
@@ -182,7 +183,9 @@ public class Timero extends Thread{
 	}
 
 	public void quit() {
+		setReady(false);
 		timerShell.quit();
+		display.dispose();
 	}
 
 	public DataManager getDataManager() {
