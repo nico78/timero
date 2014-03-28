@@ -7,6 +7,13 @@ import notification.cache.FontCache;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.nebula.cwt.animation.AnimationRunner;
+import org.eclipse.nebula.cwt.animation.effects.Grow;
+import org.eclipse.nebula.cwt.animation.effects.MoveControl;
+import org.eclipse.nebula.cwt.animation.movement.BounceOut;
+import org.eclipse.nebula.cwt.animation.movement.ElasticOut;
+import org.eclipse.nebula.cwt.animation.movement.ExpoOut;
+import org.eclipse.nebula.cwt.animation.movement.SinusVariation;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.MouseEvent;
@@ -36,7 +43,8 @@ import org.eclipse.swt.widgets.Shell;
 public class TimerShell {
 	public static final Color INIT_FG_COLOR = ColorCache.getColor(40, 73, 97);
 
-	public static final Color INIT_TITLE_COLOR = ColorCache.getColor(45, 64, 93);
+	public static final Color INIT_TITLE_COLOR = ColorCache
+			.getColor(45, 64, 93);
 	public static final Color INIT_BORDER_COLOR = ColorCache.getColor(40, 73,
 			97);
 	public static final Color INIT_BG_BG_GRADIENT = ColorCache.getColor(171,
@@ -44,11 +52,14 @@ public class TimerShell {
 	public static final Color INIT_BG_FG_GRADIENT = ColorCache.getColor(226,
 			239, 249);
 
-	private static final Color HOVER_BG_COLOR = ColorCache.getColor(0, 211, 243);
-	
-	private static final FontData TITLE_FONT = new FontData("calibri",  11, SWT.BOLD);
-	private static final FontData SUBTEXT_FONT = new FontData("calibri", 8, SWT.BOLD);
-	
+	private static final Color HOVER_BG_COLOR = ColorCache
+			.getColor(0, 211, 243);
+
+	private static final FontData TITLE_FONT = new FontData("calibri", 11,
+			SWT.BOLD);
+	private static final FontData SUBTEXT_FONT = new FontData("calibri", 8,
+			SWT.BOLD);
+
 	private Display display;
 	private CLabel timerText;
 	private Label subText;
@@ -65,7 +76,7 @@ public class TimerShell {
 	protected int xPos;
 	protected int yPos;
 	private Stylist stylist;
-	
+
 	public TimerShell(Display display, String initialText, Timero timero) {
 		this.timero = timero;
 		shell = new Shell(display, SWT.NO_FOCUS | SWT.NO_TRIM | SWT.ON_TOP
@@ -84,12 +95,9 @@ public class TimerShell {
 		subText.setText(text);
 	}
 
-	
-	
-	
 	public static class Layouts {
 		public static final GridLayout PADDING = createPadding();
-		
+
 		public static GridLayout createPadding() {
 			GridLayout gl = new GridLayout(2, false);
 			gl.marginLeft = 5;
@@ -99,31 +107,26 @@ public class TimerShell {
 			return gl;
 		}
 
-		
-
 		public static GridData getFillHorizontal2Span() {
 			GridData gd = new GridData(GridData.FILL_BOTH);
 			gd.horizontalSpan = 2;
 			return gd;
 		}
-		
-		private static final GridData GRID_TOP_LEFT = new GridData(
-		GridData.VERTICAL_ALIGN_BEGINNING
-				| GridData.HORIZONTAL_ALIGN_BEGINNING);
-		private static final GridData GD_FILL_CENTERED = new GridData(GridData.FILL_HORIZONTAL
-		| GridData.VERTICAL_ALIGN_CENTER);
-		
-		
-		
-	}
-	
-	private class Stylist {
 
+		private static final GridData GRID_TOP_LEFT = new GridData(
+				GridData.VERTICAL_ALIGN_BEGINNING
+						| GridData.HORIZONTAL_ALIGN_BEGINNING);
+		private static final GridData GD_FILL_CENTERED = new GridData(
+				GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_CENTER);
+
+	}
+
+	private class Stylist {
 
 		private void style(final Shell locShell) {
 			int width = 350;
 			int initHeight = 100;
-			
+
 			locShell.setLayout(new FillLayout());
 			locShell.setForeground(getFgColor());
 			locShell.setBackgroundMode(SWT.INHERIT_DEFAULT);
@@ -137,30 +140,33 @@ public class TimerShell {
 					drawBgImage();
 				}
 			});
-			
 
 			Image image = NotificationType.TIMERO.getImage();
 			GridData imgPosition = Layouts.GRID_TOP_LEFT;
-			addImage(inner, image, imgPosition);//TODO remove inner
+			addImage(inner, image, imgPosition);// TODO remove inner
 
-			
-			
 			String initialTitle = "TIMERO";
-			
+
 			timerText = new CLabel(inner, SWT.NONE);
 			timerText.setText(initialTitle);
 			applyControlStyling(timerText, TITLE_FONT, Layouts.GD_FILL_CENTERED);
 
 			subText = new Label(inner, SWT.WRAP);
 			subText.setText(initialText);
-			applyControlStyling(subText, SUBTEXT_FONT, Layouts.getFillHorizontal2Span());
+			applyControlStyling(subText, SUBTEXT_FONT,
+					Layouts.getFillHorizontal2Span());
 
-			locShell.setSize(width, Math.max(initHeight,requiredHeightForString(initialText, heightOfFont(subText))));
+			locShell.setSize(width, Math
+					.max(initHeight,
+							requiredHeightForString(initialText,
+									heightOfFont(subText))));
 
 			Rectangle monitorArea = locShell.getMonitor().getClientArea();
 
-			int startX = monitorArea.x + monitorArea.width - locShell.getSize().x- 2;
-			int startY = monitorArea.y + monitorArea.height - locShell.getSize().y - 2;
+			int startX = monitorArea.x + monitorArea.width
+					- locShell.getSize().x - 2;
+			int startY = monitorArea.y + monitorArea.height
+					- locShell.getSize().y - 2;
 			locShell.setLocation(startX, startY);
 
 			inner.addMouseTrackListener(new MouseTrackListener() {
@@ -220,8 +226,9 @@ public class TimerShell {
 				@Override
 				public void mouseMove(MouseEvent e) {
 					if (mouseDown) {
-						locShell.setLocation(locShell.getLocation().x + (e.x - xPos),
-								locShell.getLocation().y + (e.y - yPos));
+						locShell.setLocation(locShell.getLocation().x
+								+ (e.x - xPos), locShell.getLocation().y
+								+ (e.y - yPos));
 					}
 				}
 			});
@@ -247,8 +254,7 @@ public class TimerShell {
 			imgLabel.setImage(image);
 		}
 
-		private int requiredHeightForString(String text,
-				int typicalHeight) {
+		private int requiredHeightForString(String text, int typicalHeight) {
 			return typicalHeight * text.split("\n").length;
 		}
 
@@ -463,7 +469,82 @@ public class TimerShell {
 	}
 
 	public void highlight() {
-		flash();
+		//flash();
+
+		 upAndDrop();
+		// sideTwang();
+		// elasticGrow();
+
+	}
+
+	private void elasticGrow() {
+		// meant to keep things centred but doesn't
+		final AnimationRunner sr = new AnimationRunner();
+
+		Grow growDirect = new Grow(shell, shell.getBounds(), new Rectangle(
+				shell.getBounds().x, shell.getBounds().y,
+				shell.getBounds().width + 10, shell.getBounds().height + 10),
+				500l, new ExpoOut(), new Runnable() {
+
+					@Override
+					public void run() {
+						final Grow shrinkElastic = new Grow(shell,
+								shell.getBounds(), new Rectangle(
+										shell.getBounds().x,
+										shell.getBounds().y,
+										shell.getBounds().width - 10,
+										shell.getBounds().height - 10), 1000l,
+								new ElasticOut(), null, null);
+						sr.runEffect(shrinkElastic);
+
+					}
+				}, null);
+		sr.runEffect(growDirect);
+	}
+
+	private void sideTwang() {
+		final AnimationRunner sr = new AnimationRunner();
+		MoveControl left = new MoveControl(shell, shell.getLocation().x,
+				shell.getLocation().x - 100, shell.getLocation().y,
+				shell.getLocation().y, 1000l, new ExpoOut(), new Runnable() {
+
+					@Override
+					public void run() {
+						MoveControl backAgain = new MoveControl(shell,
+								shell.getLocation().x,
+								shell.getLocation().x + 100,
+								shell.getLocation().y, shell.getLocation().y,
+								1000l, new ElasticOut(), null, null);
+						sr.runEffect(backAgain);
+					}
+
+				}, null);
+
+		sr.runEffect(left);
+	}
+
+	
+	
+	
+	public void upAndDrop() {
+		final AnimationRunner sr = new AnimationRunner();
+		MoveControl up = new MoveControl(shell, shell.getLocation().x,
+				shell.getLocation().x, shell.getLocation().y,
+				shell.getLocation().y - 50, 1000l, new SinusVariation(1, 0.5),
+				new Runnable() {
+
+					@Override
+					public void run() {
+						MoveControl down = new MoveControl(shell, shell
+								.getLocation().x, shell.getLocation().x, shell
+								.getLocation().y, shell.getLocation().y + 50,
+								1000l, new BounceOut(), null, null);
+						sr.runEffect(down);
+					}
+
+				}, null);
+
+		sr.runEffect(up);
 	}
 
 	private void flash() {
@@ -498,8 +579,8 @@ public class TimerShell {
 
 	private void slideUp() {
 		final int RISE_RATE = 5;
-		final int INIT_Y = 50;//TODO  set from startY when drawn
-		
+		final int INIT_Y = 50;// TODO set from startY when drawn
+
 		Runnable run = new Runnable() {
 
 			@Override

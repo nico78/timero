@@ -22,6 +22,7 @@ import application.DisplayProvider;
 
 public class Timero extends Thread{
 
+	private static final int REMINDER_INTERVAL_MILLIS = 300_000;
 	public static final Job NULL_ACTIVE_JOB = new Job("none","none","NUL");
 	public static final Task NULL_ACTIVE_TASK = new Task(NULL_ACTIVE_JOB, "no task"); 
 	private static final Task UNSPECIFIED_AWAY_TASK = new Task(new Job("away","away","IDL"),"away from desk(unspecified)");
@@ -39,12 +40,14 @@ public class Timero extends Thread{
 	private Application application;
 	private ActivityRecord activeActivity;
 	private Task prevTask;
+	private Runnable animator;
 	
 	
 	public Timero(DisplayProvider displayProvider, DataManager dataManager, Application application){
 		this.displayProvider = displayProvider;
 		this.dataManager = dataManager;
 		this.application = application;
+		
 	}
   
 	public synchronized boolean isReady() {
@@ -58,6 +61,13 @@ public class Timero extends Thread{
 	public void run(){
 		display = displayProvider.getDisplay();
         timerShell = new TimerShell(display, "Starting...",this);
+        animator = new Runnable(){
+			@Override
+			public void run() {
+				timerShell.upAndDrop();
+				display.timerExec(REMINDER_INTERVAL_MILLIS, this);
+			}
+		};
         jobSwitcher = new JobSelector(timerShell.getShell(), dataManager);
         setActiveTask(NULL_ACTIVE_TASK);
         updateTimerText();
@@ -144,12 +154,21 @@ public class Timero extends Thread{
 			return;
 		this.activeTask = task;
 		if(task != NULL_ACTIVE_TASK) {
+			cancelReminder();
 			dataManager.save(activeTask);
 			ActivityRecord activity = new ActivityRecord(activeTask, now());
 			setActiveActivity(activity);
+			setPeriodicReminder();
 		} 
 	}
 	
+	private void cancelReminder(){
+		display.timerExec(-1, animator);
+	}
+	private void setPeriodicReminder() {
+		display.timerExec(REMINDER_INTERVAL_MILLIS, animator);
+	}
+
 	public synchronized Task getActiveTask(){
 		return activeTask;
 	}

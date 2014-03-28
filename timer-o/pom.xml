@@ -141,7 +141,16 @@
 		<artifactId>jt400</artifactId>
 		<version>6.7</version>
 	</dependency>
-            
-
+      <!-- pseudo local dependencies -->
+    <dependency>
+    	<groupId>org.eclipse.nebula</groupId>
+    	<artifactId>effects</artifactId>
+    	<version>1.0</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.eclipse.nebula</groupId>
+    	<artifactId>cwt</artifactId>
+    	<version>1.0</version>
+    </dependency>
 	</dependencies>
 </project>
