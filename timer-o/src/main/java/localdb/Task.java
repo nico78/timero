@@ -62,4 +62,12 @@ public class Task {
 	public void setJob(Job job) {
 		this.job = job;
 	}
+
+	@Override
+	public String toString() {
+		return "Task [id=" + id + ", job=" + job + ", taskDescription="
+				+ taskDescription + "]";
+	}
+	
+	
 }

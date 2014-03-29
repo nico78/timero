@@ -32,14 +32,12 @@ public class Timero extends Thread{
 	private JobSelector jobSwitcher ;
 	private DataManager dataManager;
 	
-	private Task activeTask;
-	
 	
 	private DisplayProvider displayProvider;
 	private boolean ready=false;
 	private Application application;
 	private ActivityRecord activeActivity;
-	private Task prevTask;
+	private Task prevAtDeskTask;
 	private Runnable animator;
 	
 	
@@ -73,6 +71,8 @@ public class Timero extends Thread{
         updateTimerText();
        timerShell.show();
 	}
+	
+	
 
 	private void updateTimerText() {
 		display.timerExec(500, new Runnable(){
@@ -93,6 +93,7 @@ public class Timero extends Thread{
 						timeDisplay = activityStartTime + " - " + timeNow;
 						activity.setEndTime(now);
 						dataManager.save(activity);
+						System.out.println("TICK: "+ activity);
 					} 
 					timerShell.setHeaderText(activeTask.getJob().toString());
 					timerShell.setSubText(taskDesc + " \n" + timeDisplay);
@@ -138,25 +139,15 @@ public class Timero extends Thread{
 		return getActiveTask()==null?NULL_ACTIVE_JOB:getActiveTask().getJob();
 	}
 
-//	public synchronized void setActiveJob(Job activeJob) {
-//		if(getActiveJob()==activeJob)
-//			return;
-//		if(activeJob==NULL_ACTIVE_JOB)
-//			return;
-//		if(getActiveTask()==null|| getActive){
-//			Task task = new Task(activeJob, "default");
-//			setActiveTask(task);
-//		}
-//	}
 
 	public synchronized void setActiveTask(Task task) {
+		System.out.println("Set active task: " + task);
 		if(getActiveTask()==task)
 			return;
-		this.activeTask = task;
 		if(task != NULL_ACTIVE_TASK) {
 			cancelReminder();
-			dataManager.save(activeTask);
-			ActivityRecord activity = new ActivityRecord(activeTask, now());
+			dataManager.save(task);
+			ActivityRecord activity = new ActivityRecord(task, now());
 			setActiveActivity(activity);
 			setPeriodicReminder();
 		} 
@@ -170,19 +161,32 @@ public class Timero extends Thread{
 	}
 
 	public synchronized Task getActiveTask(){
-		return activeTask;
+		return activeActivity!=null?activeActivity.getTask():NULL_ACTIVE_TASK;
 	}
 	
 	public void setAway(){
-		ActivityRecord currentActivity = getActiveActivity();
-		prevTask = currentActivity==null?null:currentActivity.getTask();
-		
+		savePreviousAtDeskTask();
 		dataManager.save(UNSPECIFIED_AWAY_TASK);
-		setActiveActivity(new ActivityRecord(UNSPECIFIED_AWAY_TASK, now()));
+		System.out.println("setaway - active activity was " + getActiveActivity());
+		setActiveActivity(new ActivityRecord(UNSPECIFIED_AWAY_TASK, now(),true));
+		System.out.println("setaway - active activity now " + getActiveActivity());
+	}
+
+	public void savePreviousAtDeskTask() {
+		ActivityRecord currentActivity = getActiveActivity();
+		if(currentActivity!=null && !currentActivity.isAwayFromDesk())
+			prevAtDeskTask = currentActivity.getTask();
 	}
 	
-	public void setBackAgain(){
-		setActiveTask(prevTask);
+	public void setBackAgain(Task task){
+		if(task!=null){
+			getDataManager().save(task);
+			ActivityRecord activeActivity = getActiveActivity();
+			activeActivity.setTask(task);
+			System.out.println("backagain - saving : " + activeActivity);
+			getDataManager().save(activeActivity);
+		}
+		setActiveTask(prevAtDeskTask);
 	}
 
 	private Date now() {
@@ -197,9 +201,6 @@ public class Timero extends Thread{
 		this.activeActivity = activeActivity;
 	}
 	
-	public void whatHaveYouBeenDoing(LockRecord lockRecord){
-		unlockPrompter.whatHaveYouBeenDoing(lockRecord);
-	}
 
 	public void quit() {
 		setReady(false);

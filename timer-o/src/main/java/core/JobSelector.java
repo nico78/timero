@@ -23,6 +23,7 @@ public class JobSelector {
 	private Shell parent;
 	private DataManager dataManager;
 	private NewItemCreator<Job> newJobCreator;
+	private ElementListSelectionDialog<Job> dialog;
 
 	public JobSelector(Shell parent, DataManager dataManager) {
 		this.parent = parent;
@@ -32,8 +33,7 @@ public class JobSelector {
 
 	public  Job promptNewJob(final String bigPrompt) {
 		ILabelProvider lp = new ArrayLabelProvider();
-		ElementListSelectionDialog<Job> dialog = new ElementListSelectionDialog<Job>(
-				parent, lp,newJobCreator){
+		dialog = new ElementListSelectionDialog<Job>(parent, lp, newJobCreator){
 			Image currentBackgroundImage;
 
 					@Override
@@ -44,9 +44,27 @@ public class JobSelector {
 							Point currentSize = shell.getSize();
 							int additionalHeight = 100;
 							shell.setSize(currentSize.x, currentSize.y + additionalHeight);
-							//TODO use standardised Stylist/look&feel
+							
 						}
-						decorate(shell);
+						decorateShell(shell);
+						shell.setActive();
+					}
+
+					private void decorateShell(Shell shell) {
+						//TODO use standardised Stylist/look&feel
+						shell.setForeground(ColorCache.getColor(45, 64, 93));
+						shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
+						
+						
+						final Composite inner = new Composite(shell, SWT.NONE);
+						
+						GridLayout gl = new GridLayout(2, false);
+						gl.marginLeft = 5;
+						gl.marginTop = 0;
+						gl.marginRight = 5;
+						gl.marginBottom = 5;
+						
+						inner.setLayout(gl);
 						try {
 									
 						    		// get the size of the drawing area
@@ -81,7 +99,6 @@ public class JobSelector {
 						    	} catch (Exception err) {
 						    		err.printStackTrace();
 						    	}
-						shell.setActive();
 					}
 					
 			
@@ -92,37 +109,34 @@ public class JobSelector {
 		dialog.setMessage(bigPrompt==null?"choose job":bigPrompt);
 		dialog.setEmptyListMessage("EMPTY LIST!");
 		dialog.setEmptySelectionMessage("New Item");
-		List<Job> allJobs = dataManager.getAllJobs();
-		dialog.setElements(allJobs.toArray(new Job[0]));
+		dialog.setElements(getJobsForDisplay());
 		
 		dialog.setMultipleSelection(false);
-		if(dialog.open() == Window.OK)
-			return (Job)dialog.getResult()[0];
-		else
+		
+		int responseCode = dialog.open();//blocks until response or cancelled
+		Object[] result ;
+		if(responseCode == Window.OK && (result= dialog.getResult())!=null) 
+			return (Job)result[0];
+		System.out.println("nothing chosen (" + bigPrompt + ")");
 			return null;
-
+		
 	}
 
-private void decorate(Shell shell){
-	
-    shell.setForeground(ColorCache.getColor(45, 64, 93));
-    shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
-    
+	public void cancelActiveDialog(){
+		dialog.getShell().getDisplay().asyncExec(new Runnable(){
 
-    final Composite inner = new Composite(shell, SWT.NONE);
+			@Override
+			public void run() {
+				dialog.close();				
+			}});
+		
+	}
+	public Job[] getJobsForDisplay() {
+		List<Job> allJobs = dataManager.getAllJobs();
+		return allJobs.toArray(new Job[0]);
+	}
 
-    GridLayout gl = new GridLayout(2, false);
-    gl.marginLeft = 5;
-    gl.marginTop = 0;
-    gl.marginRight = 5;
-    gl.marginBottom = 5;
-
-    inner.setLayout(gl);
-  
-}
-	
-	
-	static class ArrayLabelProvider extends LabelProvider {
+static class ArrayLabelProvider extends LabelProvider {
 
 		public String getText(Object element) {
 			Job job = (Job) element;

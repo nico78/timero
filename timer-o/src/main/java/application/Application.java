@@ -65,22 +65,22 @@ public class Application  {
 		timero.setReady(true);
 	}
 
-	private void initializeData() {
-		Job job1 = new Job("221736", "SippCentre ViewModel issue", "FIG");
-
-		Job job2 = new Job("221654", "I11 AJBELL Web trading down issue", "FIG");
-		
-		Job job3 = new Job("ADM","Admin","LOC");
-		
-		Task dev = new Task(job1, "Development");
-		Task releaseNotes = new Task(job1, "Release notes");
-		
-		ActivityRecord actRecord = new ActivityRecord(releaseNotes, now(), now());
-		actRecord.setStartTime(now());
-		actRecord.setEndTime(now());
-
-		dataManager.save(job1, job2, job3, dev, releaseNotes,actRecord);
-	}
+//	private void initializeData() {
+//		Job job1 = new Job("221736", "SippCentre ViewModel issue", "FIG");
+//
+//		Job job2 = new Job("221654", "I11 AJBELL Web trading down issue", "FIG");
+//		
+//		Job job3 = new Job("ADM","Admin","LOC");
+//		
+//		Task dev = new Task(job1, "Development");
+//		Task releaseNotes = new Task(job1, "Release notes");
+//		
+//		ActivityRecord actRecord = new ActivityRecord(releaseNotes, now(), now());
+//		actRecord.setStartTime(now());
+//		actRecord.setEndTime(now());
+//
+//		dataManager.save(job1, job2, job3, dev, releaseNotes,actRecord);
+//	}
 
 	private Date now() {
 		return new Date();

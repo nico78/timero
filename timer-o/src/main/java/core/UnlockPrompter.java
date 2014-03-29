@@ -18,7 +18,9 @@ public class UnlockPrompter {
 	private DisplayProvider displayProvider;
 	private Image currentBackgroundImage;
 	private Timero timero;
-	
+	private boolean currentlyPromptingJob=false;
+	private JobSelector awayJobSelector;
+	private TaskSelector awayTaskSelector;
 	
 	public UnlockPrompter(DisplayProvider displayProvider) {
 		this.displayProvider = displayProvider;
@@ -30,10 +32,30 @@ public class UnlockPrompter {
 	}
 
 	public void handleLock(LockRecord lockRecord){
+		System.out.println("Lock " + lockRecord);
+		if(currentlyPromptingJob){
+			System.out.println("Already prompting job- cancel active one");
+			awayJobSelector.cancelActiveDialog();
+		}
+		if(awayTaskSelector!=null){
+			System.out.println("Already prompting task - cancel active one");
+			awayTaskSelector.cancelActiveDialog();
+			//TODO synchronize on something rather than doing this
+			while(awayTaskSelector!=null){
+				try {
+					Thread.sleep(100l);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+			
 		timero.setAway();
 	}
 	
 	public void handleUnlock(LockRecord lockRecord){
+		System.out.println("Unlock " + lockRecord);
 		whatHaveYouBeenDoing(lockRecord);
 	}
 	
@@ -46,109 +68,64 @@ public class UnlockPrompter {
 				display.timerExec(300, new Runnable() {
 					@Override
 					public void run() {
-						showUnlockPrompt(lockRecord, display);
-						
-						
+						showUnlockPrompt(lockRecord);
 					}
 				});
 			}
 		});
-		;
-	}
-
-	private void showUnlockPrompt(final LockRecord lockRecord,
-			final Display display) {
-
-//		final Shell shell = new Shell(display, SWT.NO_FOCUS | SWT.NO_TRIM
-//				| SWT.ON_TOP);
-//		shell.setLayout(new FillLayout());
-//		final Color _fgColor = ColorCache.getColor(45, 64, 93);
-//		shell.setForeground(_fgColor);
-//		shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
-//
-//		final Composite inner = new Composite(shell, SWT.NONE);
-//
-//		GridLayout gl = new GridLayout(2, false);
-//		gl.marginLeft = 5;
-//		gl.marginTop = 0;
-//		gl.marginRight = 5;
-//		gl.marginBottom = 5;
-//
-//		inner.setLayout(gl);
-//		shell.addListener(SWT.Resize, new Listener() {
+//		System.out.println("Requested unlock prompt");
+//		display.asyncExec(new Runnable() {
 //			@Override
-//			public void handleEvent(Event e) {
-//				drawBgImage(shell, display);
+//			public void run() {
+//				display.timerExec(3000, new Runnable() {
+//					@Override
+//					public void run() {
+//						taskSwitcher.cancelActiveDialog();
+//					}
+//				});
 //			}
 //		});
-//
-//		CLabel imgLabel = new CLabel(inner, SWT.NONE);
-//		imgLabel.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING
-//				| GridData.HORIZONTAL_ALIGN_BEGINNING));
-//		imgLabel.setImage(NotificationType.TIMERO.getImage());
-//
-//		CLabel title = new CLabel(inner, SWT.NONE);
-//		title.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
-//				| GridData.VERTICAL_ALIGN_CENTER));
-//		title.setText("What have you been doing ?");
-//		title.setForeground(TimerShell.INIT_FG_COLOR);
-//		Font f = title.getFont();
-//		FontData fd = f.getFontData()[0];
-//		fd.setStyle(SWT.BOLD);
-//		fd.setName("calibri");
-//		fd.height = 11;
-//		title.setFont(FontCache.getFont(fd));
-//
-//		Label subText = new Label(inner, SWT.WRAP);
-//		Font tf = subText.getFont();
-//		FontData tfd = tf.getFontData()[0];
-//		tfd.setName("calibri");
-//		tfd.setStyle(SWT.BOLD);
-//		tfd.height = 8;
-//		subText.setFont(FontCache.getFont(tfd));
-//		GridData gd = new GridData(GridData.FILL_BOTH);
-//		gd.horizontalSpan = 2;
-//		subText.setLayoutData(gd);
-//		subText.setForeground(TimerShell.INIT_FG_COLOR);
-//		subText.setText("Your computer was locked from "
-//				+ lockRecord.getLockTime() + " to "
-//				+ lockRecord.getUnlockTime() + "\n" + "What were you doing?");
-//
-//		String[] proposals = new String[] { "dump", "tea", "meeting" };
-//		ComboViewer comboViewer = new ComboViewer(inner, SWT.NONE);
-//
-//		comboViewer.setContentProvider(new ArrayContentProvider());
-//		comboViewer.setLabelProvider(new LabelProvider());
-//		comboViewer.setInput(proposals);
-//		comboViewer.getCombo().setLayoutData(gd);
-//		comboViewer.getCombo().setFocus();
-//
-//		shell.setSize(350, 200);
-//		
-//		 Rectangle monitorArea = shell.getMonitor().getClientArea();
-//		 int startX = ( monitorArea.x + monitorArea.width- shell.getSize().x)/2;
-//		 int startY = ( monitorArea.y + monitorArea.height- shell.getSize().y)/2;
-//		 shell.setLocation(startX, startY);
-//		shell.open();
+//		System.out.println("Requested cancel prompt");
+	}
+
+	private void showUnlockPrompt(final LockRecord lockRecord) {
 		
-		JobSelector taskSwitcher = new JobSelector(display.getActiveShell(), timero.getDataManager());
 		
 		String prompt = "Your computer was locked from \n"
 		+ lockRecord.getLockTime() + " to \n"
 		+ lockRecord.getUnlockTime() + "\n" + "What were you doing?";
 		
-		Job job = taskSwitcher.promptNewJob(prompt);
+		Task awayTask=null;
+		currentlyPromptingJob = true;
+		Job awayJob = getAwayJobSelector().promptNewJob(prompt);
+		System.out.println("Got away job from prompt " + awayJob);
+		currentlyPromptingJob=false;
+
+		if(awayJob!=null){
+			awayTask =getAwayTaskSelector(awayJob).showSelector(null);
+			System.out.println("Got away task from prompt " + awayTask);
+			awayTaskSelector=null;
+			
+			if(awayTask==null)
+				awayTask = new Task(awayJob, "awayFrom desk");
+		}
+		System.out.println("Setting back again - away task was "+ awayTask);
+		timero.setBackAgain(awayTask);
+		awayTaskSelector = null;
 		
+	}
+	
+	private TaskSelector getAwayTaskSelector(Job awayJob){
+		awayTaskSelector = new TaskSelector(displayProvider.getDisplay().getActiveShell(), awayJob, timero.getDataManager());
 		
-		//todo move to timero
-		Task task = new Task(job, "awayFrom desk");
-		timero.getDataManager().save(task);
-		ActivityRecord activeActivity = timero.getActiveActivity();
-		activeActivity.setTask(task);
-		timero.getDataManager().save(activeActivity);
-		
-		timero.setBackAgain();
-		
+		return awayTaskSelector;
+	}
+
+
+	private JobSelector getAwayJobSelector() {
+		if(awayJobSelector==null)
+		awayJobSelector = new JobSelector(displayProvider.getDisplay().getActiveShell(), timero.getDataManager());
+		return awayJobSelector;
 	}
 
 	private void drawBgImage(Shell shell, Display display) {

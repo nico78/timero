@@ -25,6 +25,7 @@ public class ActivityRecord {
 	private Date startTime;
 	
 	private Date endTime;
+	private boolean awayFromDesk;
 	
 	public ActivityRecord(){
 		//for hibernate
@@ -35,11 +36,12 @@ public class ActivityRecord {
 		this.startTime = startTime;
 	}
 
-	public ActivityRecord(Task task, Date startTime, Date endTime){
+	public ActivityRecord(Task task, Date startTime, boolean awayFromDesk){
 		this.task = task;
 		this.startTime = startTime;
-		this.endTime = endTime;
+		this.awayFromDesk = awayFromDesk;
 	}
+	
 	
 	@ManyToOne
 	@JoinColumn(name="task_id")
@@ -75,6 +77,21 @@ public class ActivityRecord {
 
 	public void setTask(Task task) {
 		this.task = task;
+	}
+
+	public synchronized boolean isAwayFromDesk() {
+		return awayFromDesk;
+	}
+
+	public synchronized void setAwayFromDesk(boolean awayFromDesk) {
+		this.awayFromDesk = awayFromDesk;
+	}
+
+	@Override
+	public String toString() {
+		return "ActivityRecord [id=" + id + ", startTime=" + startTime
+				+ ", endTime=" + endTime + ", awayFromDesk=" + awayFromDesk
+				+ ", task=" + task + "]";
 	}
 	
 	

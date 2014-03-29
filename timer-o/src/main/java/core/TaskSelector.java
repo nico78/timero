@@ -23,20 +23,21 @@ import org.eclipse.swt.widgets.Shell;
 public class TaskSelector {
 	private Shell parent;
 	private DataManager dataManager;
-	private NewItemCreator<Task> newJobCreator;
+	private NewItemCreator<Task> newTaskCreator;
+	private ElementListSelectionDialog<Task> dialog;
 	private Job job;
 
 	public TaskSelector(Shell parent, Job job, DataManager dataManager) {
 		this.parent = parent;
 		this.dataManager = dataManager;
 		this.job = job;
-		this.newJobCreator = new NewTaskCreator(job, dataManager);
+		this.newTaskCreator = new NewTaskCreator(job, dataManager);
 	}
 
 	public  Task showSelector(final String bigPrompt) {
 		ILabelProvider lp = new ArrayLabelProvider();
-		ElementListSelectionDialog<Task> dialog = new ElementListSelectionDialog<Task>(
-				parent, lp,newJobCreator){
+		dialog = new ElementListSelectionDialog<Task>(
+				parent, lp,newTaskCreator){
 			Image currentBackgroundImage;
 
 					@Override
@@ -99,13 +100,24 @@ public class TaskSelector {
 		dialog.setElements(tasksForJob.toArray(new Task[0]));
 		
 		dialog.setMultipleSelection(false);
-		if(dialog.open() == Window.OK)
-			return (Task)dialog.getResult()[0];
-		else
+		
+		int responseCode = dialog.open();//blocks until response or cancelled
+		Object[] result ;
+		if(responseCode == Window.OK && (result= dialog.getResult())!=null) 
+			return (Task)result[0];
+		System.out.println("nothing chosen (" + bigPrompt + ")");
 			return null;
-
 	}
 
+	public void cancelActiveDialog(){
+		dialog.getShell().getDisplay().asyncExec(new Runnable(){
+
+			@Override
+			public void run() {
+				dialog.close();				
+			}});
+		
+	}
 private void decorate(Shell shell){
 	
     shell.setForeground(ColorCache.getColor(45, 64, 93));
