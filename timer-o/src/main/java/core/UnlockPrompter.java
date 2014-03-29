@@ -1,6 +1,5 @@
 package core;
 
-import localdb.ActivityRecord;
 import localdb.Job;
 import localdb.Task;
 import lockedstatus.LockRecord;
