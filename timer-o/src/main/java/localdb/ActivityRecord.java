@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -87,6 +88,11 @@ public class ActivityRecord {
 		this.awayFromDesk = awayFromDesk;
 	}
 
+	@Transient
+	public int getDurationSecs(){
+	 return (int) ((endTime.getTime() - startTime.getTime()) / 1000);
+	}
+	
 	@Override
 	public String toString() {
 		return "ActivityRecord [id=" + id + ", startTime=" + startTime

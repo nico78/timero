@@ -55,9 +55,9 @@ public class TimerShell {
 	private static final Color HOVER_BG_COLOR = ColorCache
 			.getColor(0, 211, 243);
 
-	private static final FontData TITLE_FONT = new FontData("calibri", 11,
+	public static final FontData TITLE_FONT = new FontData("calibri", 11,
 			SWT.BOLD);
-	private static final FontData SUBTEXT_FONT = new FontData("calibri", 8,
+	public static final FontData SUBTEXT_FONT = new FontData("calibri", 8,
 			SWT.BOLD);
 
 	private Display display;
@@ -113,10 +113,10 @@ public class TimerShell {
 			return gd;
 		}
 
-		private static final GridData GRID_TOP_LEFT = new GridData(
+		public static final GridData GRID_TOP_LEFT = new GridData(
 				GridData.VERTICAL_ALIGN_BEGINNING
 						| GridData.HORIZONTAL_ALIGN_BEGINNING);
-		private static final GridData GD_FILL_CENTERED = new GridData(
+		public static final GridData GD_FILL_CENTERED = new GridData(
 				GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_CENTER);
 
 	}
@@ -469,9 +469,9 @@ public class TimerShell {
 	}
 
 	public void highlight() {
-		//flash();
+		flash();
 
-		 upAndDrop();
+		// upAndDrop();
 		// sideTwang();
 		// elasticGrow();
 

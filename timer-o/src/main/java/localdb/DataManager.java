@@ -1,5 +1,6 @@
 package localdb;
 
+import java.util.Date;
 import java.util.List;
 
 public interface DataManager {
@@ -21,5 +22,13 @@ public interface DataManager {
 	public abstract List<Task> getSuggestedTasksForJob(Job job);
 
 	public abstract void close();
+
+	public abstract List runQuery(String queryString);
+
+	public abstract List<ActivityRecord> activity(Date fromDate, Date toDate);
+
+	public abstract void deleteActivity(ActivityRecord activity);
+
+	void refresh(Object... objs);
 
 }

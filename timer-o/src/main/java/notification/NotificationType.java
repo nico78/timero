@@ -18,6 +18,10 @@ public enum NotificationType {
     CONNECTED(Icons.getSWTImage("connected.png")),
     DISCONNECTED(Icons.getSWTImage("disconnected.png")),
     TRANSACTION_OK(Icons.getSWTImage("ok.png")),
+    TRANSFER_1(Icons.getSWTImage("num-1.png")),
+    TRANSFER_5(Icons.getSWTImage("num-5.png")),
+    TRANSFER_15(Icons.getSWTImage("num-15.png")),
+    TRANSFER_60(Icons.getSWTImage("num-60.png")),
     TRANSACTION_FAIL(Icons.getSWTImage("error.png"));
 
     private Image _image;

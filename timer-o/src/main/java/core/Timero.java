@@ -1,5 +1,8 @@
 package core;
 
+import static core.DateUtil.today;
+import static core.DateUtil.tomorrow;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +19,8 @@ import notification.cache.ImageCache;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
+
+import editor.ActivityTableTransferViewer;
 
 import application.Application;
 import application.DisplayProvider;
@@ -139,6 +144,11 @@ public class Timero extends Thread{
 		return getActiveTask()==null?NULL_ACTIVE_JOB:getActiveTask().getJob();
 	}
 
+	private synchronized void reloadActiveActivity(){
+		System.out.println("reloading active - was " + activeActivity);
+		dataManager.refresh(activeActivity);
+		System.out.println("reloaded active - now " + activeActivity);
+	}
 
 	public synchronized void setActiveTask(Task task) {
 		System.out.println("Set active task: " + task);
@@ -212,4 +222,19 @@ public class Timero extends Thread{
 		return dataManager;
 	}
 	
+	public void showTable(){
+		display.asyncExec(new Runnable(){
+
+			@Override
+			public void run() {
+				new ActivityTableTransferViewer(Timero.this, display,dataManager, today(), tomorrow()).runIt();
+				setReady(false);
+				System.out.println("finished showing table");
+			}});
+	}
+
+	public void reEnable() {
+		reloadActiveActivity();
+		setReady(true);
+	}
 }

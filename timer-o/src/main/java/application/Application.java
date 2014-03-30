@@ -57,6 +57,12 @@ public class Application  {
 				timero.promptNewTaskActiveJob();
 			}
 		});
+		hotKeyRegister.registerHotKey("alt H", new TimeroActionAssigned(timero){
+			@Override
+			public void doAction() {
+				timero.showTable();
+			}
+		});
 		trayRunner.setApp(this);
 		trayRunner.runInTray();
 		lockedStatusMonitor.getUnlockPrompter().setTimero(timero);

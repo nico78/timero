@@ -2,6 +2,7 @@ package localdb;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,7 +54,26 @@ public class HibernateDataManager implements DataManager {
 		session.getTransaction().commit();
 		session.close();
 	}
+	@Override
+public void refresh(Object... objs){
+	Session session = openSession();
+	for(Object obj:objs){
+		session.refresh(obj);
+	}
+	session.close();
+}
 	
+	@Override
+	public void deleteActivity(ActivityRecord activity){
+		System.out.println("Deleting " +activity);
+		Session session = openSession();
+		session.beginTransaction();
+		session.delete(activity);
+		session.getTransaction().commit();
+		
+		session.flush();
+		session.close();
+	}
 	
 	
 	/* (non-Javadoc)
@@ -107,6 +127,12 @@ public class HibernateDataManager implements DataManager {
 	//	session.close();
 		return uniqueResult;
 	}
+	
+	public static DataManager create(){
+			DataManager dataManager = new HibernateDataManager();
+			dataManager.init();
+			return dataManager;
+	}
 
 	/* (non-Javadoc)
 	 * @see localdb.DataManager#getAllJobs()
@@ -120,6 +146,26 @@ public class HibernateDataManager implements DataManager {
 		return list;
 	}
 
+	@Override
+	public List<ActivityRecord> activity(Date fromTime, Date toTime) {
+		Session session = openSession();
+		Query query = session.createQuery("from ActivityRecord where starttime > :fromTime and endtime < :toTime");
+		query.setDate("fromTime", fromTime);
+		query.setDate("toTime", toTime);
+		List<ActivityRecord> list = (List<ActivityRecord>)query.list();
+		session.close();
+		return list;
+	}
+	
+	@Override
+	@SuppressWarnings("rawtypes")
+	public List runQuery(String queryString){
+		Session session = openSession();
+		Query query = session.createQuery(queryString);
+		List list = query.list();
+		session.close();
+		return list;
+	}
 	
 	private  List<Task> getStandardTasks(Job job){
 		List<Task> standardTasks= new ArrayList<Task>();
