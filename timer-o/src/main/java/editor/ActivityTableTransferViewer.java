@@ -330,8 +330,7 @@ public class ActivityTableTransferViewer {
 	}
 
 	public List<TableEditor> getEditors(TableItem item) {
-		List<TableEditor> editors = (List<TableEditor>) item.getData("editors");
-		return editors;
+		return (List<TableEditor>) item.getData("editors");
 	}
 
 	private CLabel addTransfer( TableItem item,
