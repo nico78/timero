@@ -95,8 +95,12 @@ public class Application  {
 	
 	
 	public void quit(){
+		hotKeyRegister.quit();
+		lockedStatusMonitor.stopMonitor();
 		timero.quit();
 		dataManager.close();
+		trayRunner.quit();
+		
 	}
 
 }

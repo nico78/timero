@@ -18,8 +18,13 @@ import application.Application;
 public class WindowsTrayRunner {
 
 
+	public static void main(String[] args) {
+		new WindowsTrayRunner().runInTray();
+	}
 	
 	private Application app;
+	private TrayIcon trayIcon;
+	private SystemTray tray;
 	
 	
 	public void setApp(Application app) {
@@ -29,14 +34,27 @@ public class WindowsTrayRunner {
 	public void runInTray() {
 		if (supportsSystemTray()) {
 	
-		    final SystemTray tray = getSystemTray();
+		    tray = getSystemTray();
 		    Image image = Icons.getAWTImage("timero.png");
 	
 		    MouseListener mouseListener = new MouseAdapter(){};
+			        
+			PopupMenu popup = new PopupMenu();
+			trayIcon = new TrayIcon(image, "Tray Demo", popup);
+			ActionListener exitListener = new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					quit();
+					System.out.println("Exiting...");
+					if(app!=null)
+						app.quit();
+				}
+			};
+			MenuItem exitItem = new MenuItem("Exit");
+			exitItem.addActionListener(exitListener);
+			popup.add(exitItem);
 	
-		    PopupMenu popup = createExitPopupMenu();
+		   
 	
-		    final TrayIcon trayIcon = new TrayIcon(image, "Tray Demo", popup);
 	
 		    ActionListener actionListener = new ActionListener() {
 		        public void actionPerformed(ActionEvent e) {
@@ -52,13 +70,7 @@ public class WindowsTrayRunner {
 		  
 		    try {
 		        tray.add(trayIcon);
-		        Runtime.getRuntime().addShutdownHook(new Thread(){
-		        	@Override
-		        	public void run() {
-		        		System.out.println("removing tray icon");
-		        		tray.remove(trayIcon);
-		        	}
-		        });
+		  
 		    } catch (AWTException e) {
 		        System.err.println("TrayIcon could not be added.");
 		    }
@@ -70,29 +82,16 @@ public class WindowsTrayRunner {
 		}
 	}
 
-	private PopupMenu createExitPopupMenu() {
-		ActionListener exitListener = new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		        System.out.println("Exiting...");
-		        app.quit();
-		        System.exit(0);
-		    }
-		};
-		        
-		PopupMenu popup = new PopupMenu();
-		MenuItem exitItem = new MenuItem("Exit");
-		exitItem.addActionListener(exitListener);
-		popup.add(exitItem);
-		return popup;
-	}
-
-
 	private SystemTray getSystemTray() {
 		return SystemTray.getSystemTray();
 	}
 
 	private boolean supportsSystemTray() {
 		return SystemTray.isSupported();
+	}
+
+	public void quit() {
+		tray.remove(trayIcon);
 	}
 
 }

@@ -21,6 +21,7 @@ public class LockedStatusMonitor extends Thread {
 			sleeper.sleep();
 			statusUpdater.check();
 		}
+		System.out.println("lock monitor stopped..");
 	}
 
 

@@ -10,13 +10,15 @@ import core.TimeroAction;
 
 public class HotKeyRegister {
 
+	private Provider provider;
+
 	public HotKeyRegister() {
-		super();
+		provider = Provider.getCurrentProvider(false);
+
 	}
 
 	public void registerHotKey(String keyStroke, final TimeroAction hotkeyAction) {
-		Provider provider = Provider.getCurrentProvider(false);
-		KeyStroke switchTaskKeyStroke = KeyStroke.getKeyStroke(keyStroke);
+				KeyStroke switchTaskKeyStroke = KeyStroke.getKeyStroke(keyStroke);
 		HotKeyListener switchTaskListener = new HotKeyListener() {
 			
 			@Override
@@ -25,6 +27,14 @@ public class HotKeyRegister {
 			}
 		};
 		provider.register(switchTaskKeyStroke, switchTaskListener);
+	}
+	
+	public void quit(){
+		
+		provider.reset();
+		
+		provider.stop();
+		System.out.println("hot key register stopped");
 	}
 
 }

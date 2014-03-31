@@ -154,10 +154,10 @@ public class ActivityTableTransferViewer {
 		GridLayout paddedGridLaout = Layouts.PADDING;
 		final Composite inner = new Composite(shell, SWT.NONE);
 		GridLayout gl = new GridLayout(2, false);
-		gl.marginLeft = 0;
+		gl.marginLeft = 5;
 		gl.marginTop = 5;
 		gl.marginRight = 5;
-		gl.marginBottom = 0;
+		gl.marginBottom = 5;
 		
 		inner.setLayout(gl);
 		inner.setBackgroundMode(SWT.INHERIT_DEFAULT);
