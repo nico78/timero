@@ -52,7 +52,7 @@ public class TimerShell {
 	public static final Color INIT_BG_FG_GRADIENT = ColorCache.getColor(226,
 			239, 249);
 
-	private static final Color HOVER_BG_COLOR = ColorCache
+	public static final Color HOVER_BG_COLOR = ColorCache
 			.getColor(0, 211, 243);
 
 	public static final FontData TITLE_FONT = new FontData("calibri", 11,
@@ -528,16 +528,18 @@ public class TimerShell {
 	
 	public void upAndDrop() {
 		final AnimationRunner sr = new AnimationRunner();
+		final int initialY = shell.getLocation().y;
+		
 		MoveControl up = new MoveControl(shell, shell.getLocation().x,
 				shell.getLocation().x, shell.getLocation().y,
-				shell.getLocation().y - 50, 1000l, new SinusVariation(1, 0.5),
+				shell.getLocation().y - 50, 1000l, new ExpoOut(),
 				new Runnable() {
 
 					@Override
 					public void run() {
 						MoveControl down = new MoveControl(shell, shell
 								.getLocation().x, shell.getLocation().x, shell
-								.getLocation().y, shell.getLocation().y + 50,
+								.getLocation().y, initialY,
 								1000l, new BounceOut(), null, null);
 						sr.runEffect(down);
 					}

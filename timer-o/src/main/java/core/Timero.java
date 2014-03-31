@@ -145,9 +145,11 @@ public class Timero extends Thread{
 	}
 
 	private synchronized void reloadActiveActivity(){
-		System.out.println("reloading active - was " + activeActivity);
-		dataManager.refresh(activeActivity);
-		System.out.println("reloaded active - now " + activeActivity);
+		if(activeActivity!=null){
+			System.out.println("reloading active - was " + activeActivity);
+			dataManager.refresh(activeActivity);
+			System.out.println("reloaded active - now " + activeActivity);
+		}
 	}
 
 	public synchronized void setActiveTask(Task task) {

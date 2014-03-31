@@ -34,7 +34,10 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -74,6 +77,13 @@ public class ActivityTableTransferViewer {
 	private Shell shell;
 	private Image currentBackgroundImage;
 	private Timero timero;
+	private Color bgBgGradient = TimerShell.INIT_BG_BG_GRADIENT;
+	private Color fgColor = TimerShell.INIT_FG_COLOR;
+	private Color bgFgGradient = TimerShell.INIT_BG_FG_GRADIENT;
+	private Color borderColor = TimerShell.INIT_BORDER_COLOR;
+	private boolean mouseDown = false;
+	protected int xPos;
+	protected int yPos;
 	
 	public ActivityTableTransferViewer(Timero timero, Display display,
 			DataManager dataManager, Date fromTime, Date toTime) {
@@ -93,17 +103,7 @@ public class ActivityTableTransferViewer {
 		activityTableTransferViewer.keepOpen();
 		dataManager.close();
 	}
-	private Color getBgFgGradient() {
-		return TimerShell.INIT_BG_FG_GRADIENT;
-	}
-
-	private Color getBgBgGradient() {
-		return TimerShell.INIT_BG_BG_GRADIENT;
-	}
-
-	private Color getBorderColor() {
-		return TimerShell.INIT_BORDER_COLOR;
-	}
+	
 	private void drawBgImage() {
 		try {
 			// get the size of the drawing area
@@ -142,7 +142,7 @@ public class ActivityTableTransferViewer {
 		}
 	}
 	public void runIt() {
-		shell = new Shell(display, SWT.NO_TRIM|SWT.RESIZE);
+		shell = new Shell(display, SWT.NO_TRIM|SWT.RESIZE|SWT.ON_TOP);
 		shell.setLayout(new FillLayout());
 		shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
 		shell.addListener(SWT.Resize, new Listener() {
@@ -161,6 +161,62 @@ public class ActivityTableTransferViewer {
 		
 		inner.setLayout(gl);
 		inner.setBackgroundMode(SWT.INHERIT_DEFAULT);
+		inner.addMouseTrackListener(new MouseTrackListener() {
+
+			@Override
+			public void mouseHover(MouseEvent e) {
+				shell.setCursor(new Cursor(display, SWT.CURSOR_SIZEALL));
+			}
+
+			@Override
+			public void mouseExit(MouseEvent e) {
+				bgBgGradient = TimerShell.INIT_BG_BG_GRADIENT;
+			
+				drawBgImage();
+				shell.setCursor(null);
+			}
+
+			@Override
+			public void mouseEnter(MouseEvent e) {
+				bgBgGradient = TimerShell.HOVER_BG_COLOR;
+				drawBgImage();
+			}
+		});
+		inner.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseUp(MouseEvent arg0) {
+				mouseDown = false;
+			}
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+				mouseDown = true;
+				xPos = e.x;
+				yPos = e.y;
+			}
+
+			@Override
+			public void mouseDoubleClick(MouseEvent arg0) {
+				timero.promptNewJob();
+				mouseDown = false;
+			}
+		});
+		inner.addMouseMoveListener(new MouseMoveListener() {
+
+			@Override
+			public void mouseMove(MouseEvent e) {
+				if (mouseDown) {
+					shell.setLocation(shell.getLocation().x
+							+ (e.x - xPos), shell.getLocation().y
+							+ (e.y - yPos));
+				}
+			}
+		});
+		
+		
+		
+		
 		
 		Label day = new Label(inner, SWT.NONE);
 		day.setText(DAY_FORMAT.format(fromTime));
@@ -204,7 +260,7 @@ public class ActivityTableTransferViewer {
 				event.height = 67;
 			}
 		});
-		List<Integer> columnWidths = asList(700, 100, 150, 150, 150, 40, 40, 40, 40);
+		List<Integer> columnWidths = asList(500, 100, 150, 150, 150, 40, 40, 40, 40);
 		for (int width : columnWidths) {
 			TableColumn column = new TableColumn(table, SWT.NONE);
 			column.setWidth(width);
@@ -212,9 +268,22 @@ public class ActivityTableTransferViewer {
 		printSizes();
 		repopulateTable(activities);
 		printSizes();
+		
+		
+
+		
+		
 		shell.open();
+		
 		shell.pack();
 		
+		Rectangle monitorArea = shell.getMonitor().getClientArea();
+		
+		int startX = monitorArea.x + monitorArea.width
+				- shell.getSize().x - 2;
+		int startY = monitorArea.y + monitorArea.height
+				- shell.getSize().y - 2;
+		shell.setLocation(startX, startY);
 		printSizes();
 		printSizes();
 	}
@@ -281,12 +350,24 @@ public class ActivityTableTransferViewer {
 	}
 	
 	private Color getBgColor() {
-		return TimerShell.INIT_BG_BG_GRADIENT;
+		return getBgBgGradient();
 	}
 
 	private Color getFgColor() {
-		return TimerShell.INIT_FG_COLOR;
+		return fgColor;
 	}
+	private Color getBgFgGradient() {
+		return bgFgGradient;
+	}
+
+	private Color getBgBgGradient() {
+		return bgBgGradient;
+	}
+
+	private Color getBorderColor() {
+		return borderColor;
+	}
+	
 	public void applyFont(Control text, FontData fd) {
 		text.setFont(FontCache.getFont(fd));
 	}

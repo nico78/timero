@@ -18,6 +18,11 @@
 			<id>mvn-central</id>
 			<url>http://repo.maven.apache.org/maven2/</url>
 		</repository>
+		<repository>
+		 <id>atlassian-public</id>
+           <url>https://m2proxy.atlassian.com/repository/public</url>
+		</repository>
+		
 	</repositories>
 	
 	<build>
@@ -141,6 +146,14 @@
 		<artifactId>jt400</artifactId>
 		<version>6.7</version>
 	</dependency>
+	<!-- jira driver only -->
+<dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-rest-java-client</artifactId>
+            <version>2.0.0-m2</version>
+        </dependency>
+
+	
       <!-- pseudo local dependencies -->
     <dependency>
     	<groupId>org.eclipse.nebula</groupId>
@@ -153,4 +166,5 @@
     	<version>1.0</version>
     </dependency>
 	</dependencies>
+	
 </project>
