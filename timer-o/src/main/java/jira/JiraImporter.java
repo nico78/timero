@@ -1,4 +1,4 @@
-package jobSource;
+package jira;
 
 import java.net.URI;
 import java.net.URISyntaxException;

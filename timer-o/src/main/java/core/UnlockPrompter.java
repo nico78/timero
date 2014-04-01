@@ -55,7 +55,12 @@ public class UnlockPrompter {
 	
 	public void handleUnlock(LockRecord lockRecord){
 		System.out.println("Unlock " + lockRecord);
-		whatHaveYouBeenDoing(lockRecord);
+		if(lockRecord.isOvernight()){
+			System.out.println("Overnight");
+			timero.setBackAgain(null);
+		}
+		else
+			whatHaveYouBeenDoing(lockRecord);
 	}
 	
 	
