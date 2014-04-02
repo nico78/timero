@@ -213,3 +213,6 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+timer-o/database/taskDb.lck
+timer-o/database/taskDb.properties
+timer-o/database/taskDb.script

@@ -52,7 +52,7 @@ public class JobSelector {
 
 					private void decorateShell(Shell shell) {
 						//TODO use standardised Stylist/look&feel
-						shell.setForeground(ColorCache.getColor(45, 64, 93));
+						shell.setForeground(ColorCache.getColor(255,255,255));
 						shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
 						
 						

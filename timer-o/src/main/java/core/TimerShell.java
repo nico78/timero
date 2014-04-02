@@ -10,6 +10,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.nebula.cwt.animation.AnimationRunner;
 import org.eclipse.nebula.cwt.animation.effects.Grow;
 import org.eclipse.nebula.cwt.animation.effects.MoveControl;
+import org.eclipse.nebula.cwt.animation.effects.Resize;
 import org.eclipse.nebula.cwt.animation.movement.BounceOut;
 import org.eclipse.nebula.cwt.animation.movement.ElasticOut;
 import org.eclipse.nebula.cwt.animation.movement.ExpoOut;
@@ -28,6 +29,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -40,24 +42,27 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
+import animation.Jump;
+import animation.Stretch;
+
 public class TimerShell {
-	public static final Color INIT_FG_COLOR = ColorCache.getColor(40, 73, 97);
+	public static final Color INIT_FG_COLOR = ColorCache.getColor(255, 255, 255);
 
 	public static final Color INIT_TITLE_COLOR = ColorCache
 			.getColor(45, 64, 93);
-	public static final Color INIT_BORDER_COLOR = ColorCache.getColor(40, 73,
-			97);
-	public static final Color INIT_BG_BG_GRADIENT = ColorCache.getColor(171,
-			211, 248);
-	public static final Color INIT_BG_FG_GRADIENT = ColorCache.getColor(226,
-			239, 249);
+public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
+			218);
+	public static final Color INIT_BG_BG_GRADIENT = ColorCache.getColor(22,
+			116, 218);
+	public static final Color INIT_BG_FG_GRADIENT = ColorCache.getColor(22,
+			116, 218);
 
 	public static final Color HOVER_BG_COLOR = ColorCache
 			.getColor(0, 211, 243);
 
-	public static final FontData TITLE_FONT = new FontData("calibri", 11,
+	public static final FontData TITLE_FONT = new FontData("helvetica", 11,
 			SWT.BOLD);
-	public static final FontData SUBTEXT_FONT = new FontData("calibri", 8,
+	public static final FontData SUBTEXT_FONT = new FontData("helvtetica", 8,
 			SWT.BOLD);
 
 	private Display display;
@@ -665,5 +670,106 @@ public class TimerShell {
 				shell.dispose();
 			}
 		});
+	}
+	
+	static int[] circle(int r, int offsetX, int offsetY) {
+	    int[] polygon = new int[8 * r + 4];
+	    // x^2 + y^2 = r^2
+	    for (int i = 0; i < 2 * r + 1; i++) {
+	      int x = i - r;
+	      int y = (int) Math.sqrt(r * r - x * x);
+	      polygon[2 * i] = offsetX + x;
+	      polygon[2 * i + 1] = offsetY + y;
+	      polygon[8 * r - 2 * i - 2] = offsetX + x;
+	      polygon[8 * r - 2 * i - 1] = offsetY - y;
+	    }
+	    return polygon;
+	  }
+	public void jump() {
+		
+		final Region origRegion = shell.getRegion();
+		final int initialX = shell.getSize().x;
+		final int initialXLoc=shell.getLocation().x;
+		final int initialY = shell.getSize().y;
+		final int initialYLoc=shell.getLocation().y;
+		   final int initBallsize=shell.getSize().y;
+		final AnimationRunner sr = new AnimationRunner();
+		Stretch shrink = new Stretch(shell, shell.getSize().x,
+				58, shell.getSize().y,
+				55, false,1000l, new ExpoOut(), new Runnable() {
+
+					@Override
+					public void run() {
+						Region region = new Region();
+					    region.add(circle(26, 30, 26));
+					    // define the shape of the shell using setRegion
+					    shell.setRegion(region);
+						Jump jump= new Jump(shell, 400,initBallsize,1000l, new ExpoOut(), new Runnable() {
+
+									@Override
+									public void run() {
+										 
+										MoveControl down = new MoveControl(shell, shell
+												.getLocation().x, shell.getLocation().x, shell
+												.getLocation().y, initialYLoc,
+												1000l, new BounceOut(), new Runnable(){
+
+													@Override
+													public void run() {
+														shell.setRegion(origRegion);
+														sr.runEffect(
+															new Resize(shell,shell.getSize(),new Point(initialX,initialY),500l,new ElasticOut(),new Runnable(){
+																public void run(){
+																	sr.runEffect(
+																			new MoveControl(shell, shell
+															.getLocation().x, initialXLoc, shell
+															.getLocation().y, initialYLoc, 500l, new ElasticOut(), null, null));
+																}},null));
+															
+													};
+											
+										}, null);
+										sr.runEffect(down);
+										
+									}
+							
+						},null);
+						sr.runEffect(jump);
+					}}, null);
+		
+		sr.runEffect(shrink);
+		
+	}
+
+	public void boing() {
+		final AnimationRunner sr = new AnimationRunner();
+		final int initialY = shell.getSize().y;
+		final int initialYLoc=shell.getLocation().y;
+		Stretch up = new Stretch(shell, shell.getSize().x,
+				shell.getSize().x, shell.getSize().y,
+				shell.getSize().y + 600, true,1500l, new ExpoOut(), new Runnable() {
+
+					@Override
+					public void run() {
+						Stretch retract= new Stretch(shell, shell.getSize().x,
+								shell.getSize().x, shell.getSize().y,
+								initialY, false,1000l, new ElasticOut(), new Runnable() {
+
+									@Override
+									public void run() {
+										MoveControl down = new MoveControl(shell, shell
+												.getLocation().x, shell.getLocation().x, shell
+												.getLocation().y, initialYLoc,
+												1000l, new BounceOut(), null, null);
+										sr.runEffect(down);
+										
+									}
+							
+						},null);
+						sr.runEffect(retract);
+					}}, null);
+		
+		sr.runEffect(up);
+		
 	}
 }

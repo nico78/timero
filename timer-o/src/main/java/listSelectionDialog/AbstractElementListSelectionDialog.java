@@ -270,7 +270,7 @@ public abstract class AbstractElementListSelectionDialog extends
         label.setLayoutData(data);
 
         fMessage = label;
-        label.setFont(FontCache.getFont(new FontData("consolas",8,SWT.BOLD)));
+        label.setFont(FontCache.getFont(new FontData("helvetica",8,SWT.BOLD)));
         return label;
     }
 
