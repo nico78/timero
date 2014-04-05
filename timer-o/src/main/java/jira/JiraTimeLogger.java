@@ -49,7 +49,9 @@ public class JiraTimeLogger {
 
 	private URI jiraServerUri;
 	private JiraRestClient restClient;
-	public JiraTimeLogger() throws URISyntaxException {
+	private boolean preview;
+	public JiraTimeLogger(boolean preview) throws URISyntaxException {
+		this.preview = preview;
 		jiraServerUri = new URI("https://jira.jhc.co.uk");
 		AsynchronousJiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
 		restClient = factory.createWithBasicHttpAuthentication(
@@ -60,8 +62,8 @@ public class JiraTimeLogger {
 
 	public static void main(String[] args) throws ClassNotFoundException,
 			URISyntaxException, InterruptedException, ExecutionException {
-		
-		new JiraTimeLogger().logTime(DateUtil.today(), DateUtil.tomorrow());
+		boolean preview = args.length==1 && (args[0].equals("preview"));
+		new JiraTimeLogger(preview).logTime(DateUtil.today(), DateUtil.tomorrow());
 	}
 
 	private static class ActivitySummary {
@@ -145,13 +147,17 @@ public class JiraTimeLogger {
 			String issueKey = summary.getJob().getReference();
 			Issue issue = issueClient.getIssue(issueKey).get();
 			WorklogInput worklogInput = workLogFor(issue)
-					.setAdjustEstimateAuto()
+					.setAdjustEstimateLeave()
 					.setMinutesSpent(summary.getDurationMins())
 					.setStartDate(new DateTime(summary.getEarliestStartDate()))
 					.setComment(summary.getTasks())										
 					.build();
-			System.out.println("Logging: " + worklogInput);
-			issueClient.addWorklog(issue.getWorklogUri(), worklogInput).claim();
+			if(preview)
+				System.out.println("PREVIEW ONLY");
+			else {
+				System.out.println("Logging: " + worklogInput);
+				issueClient.addWorklog(issue.getWorklogUri(), worklogInput).claim();
+			}
 		}
 		
 		

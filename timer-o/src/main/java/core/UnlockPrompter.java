@@ -57,7 +57,11 @@ public class UnlockPrompter {
 		System.out.println("Unlock " + lockRecord);
 		if(lockRecord.isOvernight()){
 			System.out.println("Overnight");
-			timero.setBackAgain(null);
+			displayProvider.getDisplay().asyncExec(new Runnable(){
+				@Override
+				public void run() {
+					timero.setBackAgain(null);//has to be in display thread 
+				}});
 		}
 		else
 			whatHaveYouBeenDoing(lockRecord);

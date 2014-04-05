@@ -60,9 +60,9 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 	public static final Color HOVER_BG_COLOR = ColorCache
 			.getColor(0, 211, 243);
 
-	public static final FontData TITLE_FONT = new FontData("helvetica", 11,
+	public static final FontData TITLE_FONT = new FontData("consolas", 11,
 			SWT.BOLD);
-	public static final FontData SUBTEXT_FONT = new FontData("helvtetica", 8,
+	public static final FontData SUBTEXT_FONT = new FontData("consolas", 8,
 			SWT.BOLD);
 
 	private Display display;
@@ -173,7 +173,10 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 			int startY = monitorArea.y + monitorArea.height
 					- locShell.getSize().y - 2;
 			locShell.setLocation(startX, startY);
-
+			locShell.setLocation(startX, monitorArea.y + monitorArea.height);
+			
+			
+			
 			inner.addMouseTrackListener(new MouseTrackListener() {
 
 				@Override
@@ -237,8 +240,10 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 					}
 				}
 			});
-
+			
 			locShell.setVisible(true);
+			AnimationRunner sr = new AnimationRunner();
+			sr.runEffect(new MoveControl(locShell, startX, startX, locShell.getLocation().y, startY, 2000l, new ElasticOut(), null, null));
 		}
 
 		public void applyControlStyling(Control controlT, FontData titleFont,
@@ -537,7 +542,7 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 		
 		MoveControl up = new MoveControl(shell, shell.getLocation().x,
 				shell.getLocation().x, shell.getLocation().y,
-				shell.getLocation().y - 50, 1000l, new ExpoOut(),
+				shell.getLocation().y - 200, 1000l, new ExpoOut(),
 				new Runnable() {
 
 					@Override
@@ -747,7 +752,7 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 		final int initialYLoc=shell.getLocation().y;
 		Stretch up = new Stretch(shell, shell.getSize().x,
 				shell.getSize().x, shell.getSize().y,
-				shell.getSize().y + 600, true,1500l, new ExpoOut(), new Runnable() {
+				shell.getSize().y + 300, true,1500l, new ExpoOut(), new Runnable() {
 
 					@Override
 					public void run() {

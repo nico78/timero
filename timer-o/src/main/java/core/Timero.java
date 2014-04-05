@@ -27,7 +27,7 @@ import application.DisplayProvider;
 
 public class Timero extends Thread{
 
-	private static final int REMINDER_INTERVAL_MILLIS = 10_000;
+	private static final int REMINDER_INTERVAL_MILLIS = 300_000;
 	public static final Job NULL_ACTIVE_JOB = new Job("none","none","NUL");
 	public static final Task NULL_ACTIVE_TASK = new Task(NULL_ACTIVE_JOB, "no task"); 
 	private static final Task UNSPECIFIED_AWAY_TASK = new Task(new Job("away","away","IDL"),"away from desk(unspecified)");
@@ -67,7 +67,18 @@ public class Timero extends Thread{
         animator = new Runnable(){
 			@Override
 			public void run() {
-				timerShell.jump();
+				int i = 1 + (int)(Math.random() * 3);
+				switch(i){
+				case 1:
+					timerShell.jump();
+					break;
+				case 2:
+					timerShell.boing();
+					break;
+				case 3:
+					timerShell.upAndDrop();
+				}
+				
 				display.timerExec(REMINDER_INTERVAL_MILLIS, this);
 			}
 		};
@@ -163,7 +174,7 @@ public class Timero extends Thread{
 			setActiveActivity(activity);
 			setPeriodicReminder();
 		} 
-	}
+	}	
 	
 	private void cancelReminder(){
 		display.timerExec(-1, animator);

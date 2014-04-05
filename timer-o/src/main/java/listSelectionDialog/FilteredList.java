@@ -241,11 +241,11 @@ public class FilteredList extends Composite {
 		fList.setLayoutData(new GridData(GridData.FILL_BOTH));
 		fList.setFont(parent.getFont());
 	//	fList.setLinesVisible(true);
-//		FontData fd = fList.getFont().getFontData()[0];
-//		fd.setStyle(SWT.BOLD);
-//		fd.setName("calibri");
-//		fd.height = 11;
-//		fList.setFont(FontCache.getFont(fd));
+		FontData fd = fList.getFont().getFontData()[0];
+		fd.setStyle(SWT.NORMAL);
+		fd.setName("consolas");
+		fd.height = 11;
+		fList.setFont(FontCache.getFont(fd));
 		fList.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				fLabelProvider.dispose();
