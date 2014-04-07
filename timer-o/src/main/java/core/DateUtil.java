@@ -11,9 +11,32 @@ public static Date tomorrow(){
 	calendar.add(Calendar.DAY_OF_MONTH, 1);
 	return calendar.getTime();
 }
+public static Date yesterday(){
+
+	Calendar calendar = Calendar.getInstance();
+	calendar.setTime(today());
+	calendar.add(Calendar.DAY_OF_MONTH, -1);
+	return calendar.getTime();
+}
+
+
 public static Date today() {
 	return toBeginningofDay(Calendar.getInstance()).getTime();
 }
+public static Date dayBefore(Date date) {
+	Calendar calendar = Calendar.getInstance();
+	calendar.setTime(date);
+	calendar.add(Calendar.DAY_OF_MONTH, -1);
+	return calendar.getTime();
+}
+
+public static Date dayAfter(Date date) {
+	Calendar calendar = Calendar.getInstance();
+	calendar.setTime(date);
+	calendar.add(Calendar.DAY_OF_MONTH, 1);
+	return calendar.getTime();
+}
+
 private static Calendar toBeginningofDay(Calendar calendar){
  calendar.set(Calendar.HOUR_OF_DAY, 0);
  calendar.set(Calendar.MINUTE, 0);

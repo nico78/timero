@@ -216,3 +216,5 @@ pip-log.txt
 timer-o/database/taskDb.lck
 timer-o/database/taskDb.properties
 timer-o/database/taskDb.script
+timer-o/database/taskDb.properties
+timer-o/database/taskDb.script

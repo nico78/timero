@@ -70,7 +70,7 @@ public class Timero extends Thread{
 				int i = 1 + (int)(Math.random() * 3);
 				switch(i){
 				case 1:
-					timerShell.jump();
+					timerShell.ballJump();
 					break;
 				case 2:
 					timerShell.boing();
@@ -109,9 +109,9 @@ public class Timero extends Thread{
 						timeDisplay = activityStartTime + " - " + timeNow;
 						activity.setEndTime(now);
 						dataManager.save(activity);
-						System.out.println("TICK: "+ activity);
 					} 
-					timerShell.setHeaderText(activeTask.getJob().toString());
+					Job job = activeTask.getJob();
+					timerShell.setHeaderText(job.getReference()+"\n"+job.getDescription());
 					timerShell.setSubText(taskDesc + " \n" + timeDisplay);
 					
 				}
@@ -121,33 +121,53 @@ public class Timero extends Thread{
         });
 	}
 	
-	public void promptNewJob(){
+	public void promptNewActiveJob(){
     	display.syncExec(new Runnable(){
     		public void run(){
     			Job newJob = jobSwitcher.promptNewJob(null);
     			if(newJob!=null){
-    				promptNewTask(newJob);
+    				promptNewActiveTask(newJob);
     			}
     			timerShell.focus();
     		}
 
     	});
     }
+	
+	public Task promptForTask(){
+		final Task[] taskA=new Task[1];
+    	display.syncExec(new Runnable(){
+    		public void run(){
+    			Job job = jobSwitcher.promptNewJob(null);
+    			if(job!=null)
+    				taskA[0]=askForTask(job);
+    			
+    			timerShell.focus();
+    		}
+
+    	});
+    	return taskA[0];
+    }
 
 	public void promptNewTaskActiveJob(){
 		display.syncExec(new Runnable(){
 			public void run(){
-				promptNewTask(getActiveJob());
+				promptNewActiveTask(getActiveJob());
 				timerShell.focus();
 			}
 		});
 	}
 	
-	private void promptNewTask(Job newJob) {
+	private void promptNewActiveTask(Job newJob) {
 		Task newTask = new TaskSelector(timerShell.getShell(), newJob, dataManager).showSelector(null);
 		timerShell.highlight();
 		if(newTask!=null)
 			setActiveTask(newTask);
+	}
+
+
+	public Task askForTask(Job job) {
+		return new TaskSelector(timerShell.getShell(), job, dataManager).showSelector(null);
 	}
 
 
@@ -240,6 +260,12 @@ public class Timero extends Thread{
 
 			@Override
 			public void run() {
+				cancelReminder();
+			}});
+		display.asyncExec(new Runnable(){
+
+			@Override
+			public void run() {
 				new ActivityTableTransferViewer(Timero.this, display,dataManager, today(), tomorrow()).runIt();
 				setReady(false);
 				System.out.println("finished showing table");
@@ -249,5 +275,7 @@ public class Timero extends Thread{
 	public void reEnable() {
 		reloadActiveActivity();
 		setReady(true);
+		setPeriodicReminder();
+		
 	}
 }

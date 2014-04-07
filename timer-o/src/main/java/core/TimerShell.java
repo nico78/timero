@@ -8,6 +8,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.nebula.cwt.animation.AnimationRunner;
+import org.eclipse.nebula.cwt.animation.ScrollingSmoother;
 import org.eclipse.nebula.cwt.animation.effects.Grow;
 import org.eclipse.nebula.cwt.animation.effects.MoveControl;
 import org.eclipse.nebula.cwt.animation.effects.Resize;
@@ -44,21 +45,24 @@ import org.eclipse.swt.widgets.Shell;
 
 import animation.Jump;
 import animation.Stretch;
+import animation.ThrowAndBounce;
 
 public class TimerShell {
+	
+	//IGNRED: ColorCache.getColor(211,34,42);
 	public static final Color INIT_FG_COLOR = ColorCache.getColor(255, 255, 255);
 
 	public static final Color INIT_TITLE_COLOR = ColorCache
 			.getColor(45, 64, 93);
-public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
-			218);
-	public static final Color INIT_BG_BG_GRADIENT = ColorCache.getColor(22,
-			116, 218);
-	public static final Color INIT_BG_FG_GRADIENT = ColorCache.getColor(22,
-			116, 218);
+public static final Color INIT_BORDER_COLOR = 
+			ColorCache.getColor(22, 116, 218);
+	public static final Color INIT_BG_BG_GRADIENT = 
+			ColorCache.getColor(22, 116, 218);
+	public static final Color INIT_BG_FG_GRADIENT = 
+			ColorCache.getColor(22, 116, 218);
 
 	public static final Color HOVER_BG_COLOR = ColorCache
-			.getColor(0, 211, 243);
+			.getColor(90,120, 180);
 
 	public static final FontData TITLE_FONT = new FontData("consolas", 11,
 			SWT.BOLD);
@@ -94,10 +98,13 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 
 	public void setHeaderText(String text) {
 		timerText.setText(text);
+		timerText.pack();
+
 	}
 
 	public void setSubText(String text) {
 		subText.setText(text);
+		subText.pack();
 	}
 
 	public static class Layouts {
@@ -136,7 +143,7 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 			locShell.setForeground(getFgColor());
 			locShell.setBackgroundMode(SWT.INHERIT_DEFAULT);
 
-			final Composite inner = new Composite(locShell, SWT.NONE);
+			final Composite inner = new Composite(locShell, SWT.DOUBLE_BUFFERED);
 			GridLayout paddedGridLaout = Layouts.PADDING;
 			inner.setLayout(paddedGridLaout);
 			locShell.addListener(SWT.Resize, new Listener() {
@@ -145,7 +152,6 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 					drawBgImage();
 				}
 			});
-
 			Image image = NotificationType.TIMERO.getImage();
 			GridData imgPosition = Layouts.GRID_TOP_LEFT;
 			addImage(inner, image, imgPosition);// TODO remove inner
@@ -187,6 +193,8 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 				@Override
 				public void mouseExit(MouseEvent e) {
 					bgBgGradient = INIT_BG_BG_GRADIENT;
+					bgFgGradient = INIT_BG_FG_GRADIENT;
+					borderColor = INIT_BORDER_COLOR;
 					fgColor = INIT_FG_COLOR;
 					drawBgImage();
 					locShell.setCursor(null);
@@ -195,6 +203,8 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 				@Override
 				public void mouseEnter(MouseEvent e) {
 					bgBgGradient = HOVER_BG_COLOR;
+					bgFgGradient = HOVER_BG_COLOR;
+					borderColor = HOVER_BG_COLOR;
 					drawBgImage();
 				}
 			});
@@ -225,7 +235,7 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 
 				@Override
 				public void mouseDoubleClick(MouseEvent arg0) {
-					timero.promptNewJob();
+					timero.promptNewActiveJob();
 					mouseDown = false;
 				}
 			});
@@ -542,7 +552,7 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 		
 		MoveControl up = new MoveControl(shell, shell.getLocation().x,
 				shell.getLocation().x, shell.getLocation().y,
-				shell.getLocation().y - 200, 1000l, new ExpoOut(),
+				shell.getLocation().y - 200, 2000l, new ThrowAndBounce()/*,
 				new Runnable() {
 
 					@Override
@@ -554,7 +564,7 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 						sr.runEffect(down);
 					}
 
-				}, null);
+				}*/,null, null);
 
 		sr.runEffect(up);
 	}
@@ -690,7 +700,7 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 	    }
 	    return polygon;
 	  }
-	public void jump() {
+public void ballJump() {
 		
 		final Region origRegion = shell.getRegion();
 		final int initialX = shell.getSize().x;
@@ -709,15 +719,8 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 					    region.add(circle(26, 30, 26));
 					    // define the shape of the shell using setRegion
 					    shell.setRegion(region);
-						Jump jump= new Jump(shell, 400,initBallsize,1000l, new ExpoOut(), new Runnable() {
-
-									@Override
-									public void run() {
-										 
-										MoveControl down = new MoveControl(shell, shell
-												.getLocation().x, shell.getLocation().x, shell
-												.getLocation().y, initialYLoc,
-												1000l, new BounceOut(), new Runnable(){
+					    
+					    MoveControl jump = new MoveControl(shell,shell.getLocation().x, shell.getLocation().x,shell.getLocation().y,shell.getLocation().y- 700, 2000l, new ThrowAndBounce(), new Runnable(){
 
 													@Override
 													public void run() {
@@ -734,14 +737,11 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 													};
 											
 										}, null);
-										sr.runEffect(down);
-										
-									}
+									sr.runEffect(jump);
+					}
+
+								},null);
 							
-						},null);
-						sr.runEffect(jump);
-					}}, null);
-		
 		sr.runEffect(shrink);
 		
 	}
@@ -752,10 +752,11 @@ public static final Color INIT_BORDER_COLOR = ColorCache.getColor(22	, 116,
 		final int initialYLoc=shell.getLocation().y;
 		Stretch up = new Stretch(shell, shell.getSize().x,
 				shell.getSize().x, shell.getSize().y,
-				shell.getSize().y + 300, true,1500l, new ExpoOut(), new Runnable() {
+				shell.getSize().y + 900, true,4000l, new ExpoOut(), new Runnable() {
 
 					@Override
 					public void run() {
+						shell.setAlpha(255);
 						Stretch retract= new Stretch(shell, shell.getSize().x,
 								shell.getSize().x, shell.getSize().y,
 								initialY, false,1000l, new ElasticOut(), new Runnable() {

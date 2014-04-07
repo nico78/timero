@@ -150,7 +150,7 @@ public void refresh(Object... objs){
 	@Override
 	public List<ActivityRecord> activity(Date fromTime, Date toTime) {
 		Session session = openSession();
-		Query query = session.createQuery("from ActivityRecord where starttime > :fromTime and endtime < :toTime");
+		Query query = session.createQuery("from ActivityRecord where starttime > :fromTime and endtime < :toTime order by starttime");
 		query.setDate("fromTime", fromTime);
 		query.setDate("toTime", toTime);
 		List<ActivityRecord> list = (List<ActivityRecord>)query.list();

@@ -2,10 +2,12 @@ package time;
 
 import java.util.concurrent.TimeUnit;
 
-public class TimeFormatter {
+public class TimeAmountFormatter {
 
 	
 	public String formatSecsAsTime(int seconds){
+		if(seconds==0)
+			return "none";
 		int days = (int)TimeUnit.SECONDS.toDays(seconds);        
 		 int hours = (int)(TimeUnit.SECONDS.toHours(seconds) - (days *24));
 		 int minutes = (int)(TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds)* 60));
